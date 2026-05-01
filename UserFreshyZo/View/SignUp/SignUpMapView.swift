@@ -1,243 +1,166 @@
-import SwiftUI
-import Combine
-import MapKit
-import CoreLocation
 
-// MARK: - Location Manager
-@MainActor
-final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+
+
+import SwiftUI
+import GoogleMaps
+import CoreLocation
+import Combine
+import Contacts
+
+// MARK: - Google Maps SwiftUI Wrapper
+
+struct GoogleMapsView: UIViewRepresentable {
+    @ObservedObject var locationManager: LocationManager
     
-    private let manager = CLLocationManager()
-    private let geocoder = CLGeocoder()
-    
-    @Published var cameraPosition: MapCameraPosition = .automatic
-    @Published var selectedCoordinate: CLLocationCoordinate2D?
-    @Published var address: String = "Select location"
-    @Published var isFetching: Bool = false
-    
-    override init() {
-        super.init()
-        manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyBest
+    func makeUIView(context: Context) -> GMSMapView {
+        let options = GMSMapViewOptions()
+        options.camera = GMSCameraPosition.camera(withLatitude: 0, longitude: 0, zoom: 15)
+        
+        let mapView = GMSMapView(options: options)
+        mapView.delegate = context.coordinator
+        mapView.isMyLocationEnabled = true
+        mapView.settings.myLocationButton = false
+        
+        return mapView
     }
     
-    // Request permission + current location
-    func requestPermission() {
-        manager.requestWhenInUseAuthorization()
-        
-        if manager.authorizationStatus == .authorizedWhenInUse ||
-            manager.authorizationStatus == .authorizedAlways {
-            manager.startUpdatingLocation()
-        }
-    }
     
-    // Permission status changed
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if manager.authorizationStatus == .authorizedWhenInUse ||
-            manager.authorizationStatus == .authorizedAlways {
-            manager.startUpdatingLocation()
-        }
-    }
-    
-    // Get current location
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.first else { return }
-        
-        let region = MKCoordinateRegion(
-            center: location.coordinate,
-            span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-        )
-        
-        cameraPosition = .region(region)
-        selectedCoordinate = location.coordinate
-        
-        updateAddress(for: location.coordinate)
-        
-        manager.stopUpdatingLocation()
-    }
-    
-    // Reverse geocode
-    func updateAddress(for coordinate: CLLocationCoordinate2D) {
-        let location = CLLocation(
-            latitude: coordinate.latitude,
-            longitude: coordinate.longitude
-        )
-        
-        isFetching = true
-        
-        Task {
-            do {
-                let placemarks = try await geocoder.reverseGeocodeLocation(location)
-                
-                if let place = placemarks.first {
-                    address = [
-                        place.name,
-                        place.subLocality,
-                        place.locality
-                    ]
-                        .compactMap { $0 }
-                        .joined(separator: ", ")
-                }
-                
-            } catch {
-                address = "Location not recognized"
+    func updateUIView(_ uiView: GMSMapView, context: Context) {
+            guard let coord = locationManager.selectedCoordinate else { return }
+            
+            // Check if this update is coming from the user dragging the map
+            if context.coordinator.isInternalUpdate {
+                context.coordinator.isInternalUpdate = false
+                return
             }
             
-            isFetching = false
+            // FIX: Use uiView.camera.zoom instead of hardcoded 15
+            // This keeps the user's preferred zoom level when the button is pressed
+            let camera = GMSCameraPosition.camera(withTarget: coord, zoom: uiView.camera.zoom)
+            uiView.animate(to: camera)
+        }
+//    func updateUIView(_ uiView: GMSMapView, context: Context) {
+//        guard let coord = locationManager.selectedCoordinate else { return }
+//        
+//        // Check if this update is coming from the user dragging the map
+//        // If it is, we skip the camera update to prevent the flicker
+//        if context.coordinator.isInternalUpdate {
+//            context.coordinator.isInternalUpdate = false
+//            return
+//        }
+//        
+//        // This part only runs when the "Use My Current Location" button is pressed
+//        let camera = GMSCameraPosition.camera(withTarget: coord, zoom: 15)
+//        uiView.animate(to: camera)
+//    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, GMSMapViewDelegate {
+        var parent: GoogleMapsView
+        var isInternalUpdate = false
+        
+        init(_ parent: GoogleMapsView) {
+            self.parent = parent
+        }
+        
+        func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
+            let newCenter = position.target
+            
+            if let old = parent.locationManager.selectedCoordinate {
+                let latDiff = abs(old.latitude - newCenter.latitude)
+                let lonDiff = abs(old.longitude - newCenter.longitude)
+                // If the map hasn't actually moved significantly, do nothing
+                guard latDiff > 0.00001 || lonDiff > 0.00001 else { return }
+            }
+            
+            // Mark this as an internal update so updateUIView ignores it
+            isInternalUpdate = true
+            
+            parent.locationManager.selectedCoordinate = newCenter
+            parent.locationManager.updateAddress(for: newCenter)
         }
     }
 }
 
-// MARK: - Main View
+// MARK: - Main UI View
 struct SignUpMapView: View {
-    
     @StateObject private var locationManager = LocationManager()
-    @EnvironmentObject var authVM: AuthViewModel
-    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack(spacing: 0) {
+            // Address Display Header
             
-            headerView
-            
+            // Map Section
             ZStack {
+                GoogleMapsView(locationManager: locationManager)
+                    .edgesIgnoringSafeArea(.all)
                 
-                Map(position: $locationManager.cameraPosition) {
-                    if let coord = locationManager.selectedCoordinate {
-                        Marker("Delivery Point", coordinate: coord)
-                            .tint(.green)
-                    }
-                }.frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                .onMapCameraChange(frequency: .onEnd) { context in
-                    let center = context.region.center
-                    locationManager.selectedCoordinate = center
-                    locationManager.updateAddress(for: center)
+                // Static Center Pin
+                VStack {
+                    Image("location_logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20) // adjust size like an icon//                        .overlay(
+//
+                    Spacer().frame(height: 35)
                 }
-                
-                // Center pin
-                Image(systemName: "mappin.circle.fill")
-                    .font(.system(size: 42))
-                    .foregroundColor(.red)
-                    .shadow(radius: 5)
-                    .offset(y: -20)
-            }
-            .ignoresSafeArea(edges: .top)
-            
-            locationDetailsCard
-        }
-        .navigationBarBackButtonHidden(true)
-        .onAppear {
-            locationManager.requestPermission()
-        }
-    }
-}
-
-// MARK: - UI Views
-extension SignUpMapView {
-    
-    private var headerView: some View {
-        HStack {
-            
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.title3.bold())
-                    .foregroundColor(.black)
-                    .padding(10)
-                    .background(Color.white)
-                    .clipShape(Circle())
-                    .shadow(radius: 2)
             }
             
-            Spacer()
             
-            Text("Set Delivery Location")
-                .font(.headline)
-                .foregroundColor(.black)
-            
-            Spacer()
-            
-            Circle()
-                .fill(.clear)
-                .frame(width: 40, height: 40)
-        }
-        .padding()
-        .background(Color.white)
-    }
-    
-    private var locationDetailsCard: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            
-            HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("SELECTED ADDRESS")
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.secondary)
                 
-                Image(systemName: "location.fill")
-                    .foregroundColor(.green)
-                    .padding(.top, 3)
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    
-                    Text("Selected Address")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .fontWeight(.semibold)
-                    
+                ZStack(alignment: .leading) {
                     if locationManager.isFetching {
-                        ProgressView()
-                            .scaleEffect(0.9)
+                        HStack(spacing: 10) {
+                            ProgressView().scaleEffect(0.8)
+                            Text("Locating...")
+                                .font(.body)
+                                .italic()
+                        }
+                        .transition(.opacity) // Fade in/out only
                     } else {
                         Text(locationManager.address)
-                            .font(.body)
-                            .fontWeight(.medium)
+                            .lineLimit(nil)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .transition(.opacity) // Fade in/out only
                     }
                 }
-                
-                Spacer()
-                
-                Button {
-                    locationManager.requestPermission()
-                } label: {
-                    Image(systemName: "scope")
-                        .font(.title2)
-                        .foregroundColor(.green)
-                }
             }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(.secondarySystemBackground))
+            // Apply easeInOut only to the address change to handle height expansion
+            .animation(.easeInOut(duration: 0.1), value: locationManager.isFetching)
+            .animation(.easeInOut(duration: 0.1), value: locationManager.address)
             
-            Button {
-                confirmLocation()
-            } label: {
-                Text("Confirm & Continue")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.green)
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+            // Bottom Button
+            Button(action: {
+                locationManager.requestPermission()
+            }) {
+                HStack {
+                    Image(systemName: "location.fill")
+                    Text("Use My Current Location")
+                        .fontWeight(.semibold)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(.appGreen)
+                .foregroundColor(.white)
+                .cornerRadius(12)
             }
-        }
-        .padding(24)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 28))
-        .shadow(color: .black.opacity(0.12), radius: 8, y: -4)
-    }
-}
-
-// MARK: - Actions
-extension SignUpMapView {
-    
-    private func confirmLocation() {
-        withAnimation(.spring()) {
-            authVM.isNewCustomer = false
-            authVM.isLoggedIn = true
+            .padding()
         }
     }
 }
 
-// MARK: - Preview
 #Preview {
-    NavigationStack {
-        SignUpMapView()
-            .environmentObject(AuthViewModel())
-    }
+    SignUpMapView()
 }

@@ -7,9 +7,24 @@
 
 import SwiftUI
 
+
+
+
+import GoogleMaps
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        // Provide your Google Maps API Key here
+        GMSServices.provideAPIKey("AIzaSyCeATEzCO0x7VxVVHV23Rg_FLAUnaO6iMU")
+        
+        return true
+    }
+}
 @main
 struct UserFreshyZoApp: App {
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
     @StateObject var cartVM = CartViewModel()
     @StateObject var authViewModel = AuthViewModel()
     @StateObject var router = Router()

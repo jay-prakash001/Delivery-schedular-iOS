@@ -1,6 +1,15 @@
 {
-  "originHash" : "ac72a2daf0f24f3f7e12a5d7541574ea9e4151dd3282f3c3e14cff698b7f82fe",
+  "originHash" : "1cb20dc997f942c7b2766b677aa6d8c64d47f1fe28ddd588f2bfcd33f3a8a7c4",
   "pins" : [
+    {
+      "identity" : "ios-maps-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googlemaps/ios-maps-sdk",
+      "state" : {
+        "revision" : "f2f8341edc8e9a6155f43ce788d4d2f91497177a",
+        "version" : "10.12.0"
+      }
+    },
     {
       "identity" : "lottie-ios",
       "kind" : "remoteSourceControl",

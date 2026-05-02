@@ -86,11 +86,22 @@ struct SignUpView: View {
                 // MARK: Input Fields
                 VStack(spacing: 12) {
                     
+//                    Material3OutLinedTextField(
+//                        title: "Enter Full Name",
+//                        text: $authViewModel.fullname
+//                    )
+//                    
+                    
+                    // MARK: Phone TextField
                     Material3OutLinedTextField(
                         title: "Enter Full Name",
-                        text: $authViewModel.fullname
+                        text: Binding(
+                            get: { authViewModel.fullname },
+                            set: { authViewModel.updateFullName($0) }
+                        )
                     )
                     
+
                     
                     
                     // MARK: Continue Button

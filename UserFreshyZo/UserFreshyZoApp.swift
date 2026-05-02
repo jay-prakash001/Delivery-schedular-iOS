@@ -32,10 +32,12 @@ struct UserFreshyZoApp: App {
         WindowGroup {
             
 //            SplashView()
-            NavigationStack {
-                SignUpMapView()
-                    .environmentObject(AuthViewModel())
-            }
+//            NavigationStack {
+//                SignUpMapView()
+//                    .environmentObject(AuthViewModel())
+//            }
+            
+            SignUpView()
                 .environmentObject(cartVM)
                 .environmentObject(authViewModel)
                 .environmentObject(router)

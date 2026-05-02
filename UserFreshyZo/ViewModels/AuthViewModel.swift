@@ -80,6 +80,10 @@ class AuthViewModel: ObservableObject {
         phone = String(digits.prefix(10))
     }
     
+    func updateFullName(_ value : String){
+        fullname = value
+    }
+    
     // MARK: - Request OTP
     
     func requestOtp() {

@@ -24,38 +24,16 @@ struct SplashView: View {
             if(authViewModel.isLoggedIn){
                 if(authViewModel.isNewCustomer){
                     SignUpView().environmentObject(authViewModel).environmentObject(router)
-//                    Color.clear
-//                        .onAppear {
-//                            router.replaceWithClearBackStack(with: .signUpName)
-//                        }
-                    
-                    
+                                        
                 }else{
-//                    Color.clear
-//                        .onAppear {
-//                            router.replaceWithClearBackStack(with: .mainTab)
-//                        }
                     MainTabView()
                 }
                 
             }else{
-                
-                
-//                Color.clear
-//                    .onAppear {
-//                        router.replaceWithClearBackStack(with: .wellComeSlider)
-//                        
-//                    }
-                
+                                
                 WellComeSliderView().environmentObject(authViewModel).environmentObject(router)
             }
             
-            
-//                            Color.clear
-//                                .onAppear {
-//                                    router.replaceWithClearBackStack(with: .signUpName)
-//            
-//                                }
             
         } else {
             VStack {

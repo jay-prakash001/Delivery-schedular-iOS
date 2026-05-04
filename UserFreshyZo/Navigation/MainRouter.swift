@@ -1,26 +1,28 @@
+//
+//  MainRouter.swift
+//  UserFreshyZo
+//
+//  Created by Rahul Verma on 04/05/26.
+//
+
 // MARK: - Router.swift
 
 import SwiftUI
 import Combine
 
-final class Router: ObservableObject {
+final class MainRouter: ObservableObject {
 
     @Published var navPath = NavigationPath()
 
-    enum Screens: Hashable {
-        case wellComeSlider
-        case login_phone
-        case login_otp
-        case mainTab
-        case signUpName
-        case signUpMap
+    enum MainFlow: Hashable {
+        case maintab
     }
 
-    func navigate(to screen: Screens) {
+    func navigate(to screen: MainFlow) {
         navPath.append(screen)
     }
 
-    func replaceWithClearBackStack(with screen: Screens) {
+    func replaceWithClearBackStack(with screen: MainFlow) {
         navPath = NavigationPath()
         navPath.append(screen)
     }
@@ -35,3 +37,4 @@ final class Router: ObservableObject {
         navPath = NavigationPath()
     }
 }
+

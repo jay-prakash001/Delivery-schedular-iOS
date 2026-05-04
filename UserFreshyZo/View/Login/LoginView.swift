@@ -1,9 +1,4 @@
-//
-//  LoginView.swift
-//  UserFreshyZo
-//
-//  Created by Rahul Verma on 25/04/26.
-//
+
 
 import Foundation
 import SwiftUI
@@ -11,30 +6,29 @@ import SwiftUI
 struct LoginView: View {
     
     @EnvironmentObject var authViewModel: AuthViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: AuthRouter
     
     // Navigation States
     @State private var navigateToMainTab = false
     @State private var navigateToOtp = false
     
     var body: some View {
-        
+        // Use a ScrollView or VStack without global horizontal padding
         VStack(spacing: 0) {
             
-            // MARK: Top Background Section
+            // MARK: - Top Background Section (Full Width)
             ZStack(alignment: .topTrailing) {
-                
                 Color(.systemGray6)
                 
                 Image("products_group")
                     .resizable()
                     .scaledToFill()
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 560)
+                    .frame(width: UIScreen.main.bounds.width, height: 560) // Explicit screen width
+                    .clipped() // Ensures image doesn't bleed right/left
                 
                 // Skip Button
                 Button {
-                    navigateToMainTab = true
+                    authViewModel.skipToMain = true
                 } label: {
                     Text("Skip")
                         .fontWeight(.semibold)
@@ -44,14 +38,12 @@ struct LoginView: View {
                         .clipShape(Capsule())
                 }
                 .padding(.top, 60)
-                .padding(.trailing, 20)
+                .padding(.trailing, 20) // Now relative to screen edge
             }
             .frame(height: 560)
-            .clipped()
             
-            
-            // MARK: Bottom Content Section
-            VStack(spacing: 20) {
+            // MARK: - Bottom Content Section (Padded)
+            VStack(spacing: 10) {
                 
                 // Logo
                 VStack(spacing: 2) {
@@ -66,7 +58,6 @@ struct LoginView: View {
                 }
                 .padding(.top, 20)
                 
-                
                 // MARK: Phone TextField
                 Material3OutLinedTextField(
                     title: "Enter Phone Number",
@@ -75,7 +66,6 @@ struct LoginView: View {
                         set: { authViewModel.updatePhone($0) }
                     )
                 )
-                
                 
                 // MARK: Continue Button
                 Button {
@@ -103,8 +93,6 @@ struct LoginView: View {
                     .cornerRadius(12)
                 }
                 .disabled(!authViewModel.isValidPhone)
-                .padding(.horizontal)
-                
                 
                 // MARK: Error Message
                 if let error = authViewModel.errorMessage {
@@ -113,7 +101,6 @@ struct LoginView: View {
                         .font(.footnote)
                 }
                 
-                
                 // MARK: Terms Text
                 Text("By continuing, you agree to our Terms and Privacy Policy")
                     .font(.footnote)
@@ -121,42 +108,24 @@ struct LoginView: View {
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, 20)
                 
                 Spacer()
             }
+            .padding(.horizontal, 20) // Padding applied ONLY to text content
             .background(Color.white)
-            .padding(.horizontal, 46)
         }
-        
-        
-        // MARK: OTP Navigation Logic
+        .toolbar(.hidden, for: .navigationBar)
+        .ignoresSafeArea(edges: .top)
+        .ignoresSafeArea(.keyboard)
         .onChange(of: authViewModel.otpRequested) { newValue in
             if newValue {
-                navigateToOtp = true
-                
+                router.navigate(to: .login_otp)
                 DispatchQueue.main.async {
                     authViewModel.otpRequested = false
                 }
             }
         }
-        
-        
-        // MARK: Navigation Destinations
-        
-        // Skip -> MainTabView
-        .navigationDestination(isPresented: $navigateToMainTab) {
-            MainTabView()
-                .navigationBarBackButtonHidden(true)
-        }
-        
-        // OTP Screen
-        .navigationDestination(isPresented: $navigateToOtp) {
-            OtpView()
-                .environmentObject(authViewModel)
-        }
-        
-        .ignoresSafeArea(edges: .top)
     }
 }
 
@@ -164,6 +133,6 @@ struct LoginView: View {
     NavigationStack {
         LoginView()
             .environmentObject(AuthViewModel())
-            .environmentObject(Router())
+            .environmentObject(AuthRouter())
     }
 }

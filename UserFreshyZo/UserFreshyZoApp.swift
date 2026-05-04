@@ -25,22 +25,12 @@ struct UserFreshyZoApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
-    @StateObject var cartVM = CartViewModel()
     @StateObject var authViewModel = AuthViewModel()
-    @StateObject var router = Router()
     var body: some Scene {
         WindowGroup {
             
-//            SplashView()
-//            NavigationStack {
-//                SignUpMapView()
-//                    .environmentObject(AuthViewModel())
-//            }
-            
-            SignUpView()
-                .environmentObject(cartVM)
+            SplashView()
                 .environmentObject(authViewModel)
-                .environmentObject(router)
                 .preferredColorScheme(.light)
         }
     }

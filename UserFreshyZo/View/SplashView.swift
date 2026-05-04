@@ -10,7 +10,9 @@ import SwiftUI
 struct SplashView: View {
     
     @EnvironmentObject private var authViewModel :AuthViewModel
-    @EnvironmentObject  var router :Router
+    @StateObject var authRouter = AuthRouter()
+        @StateObject var mainRouter = MainRouter()
+        @StateObject var cartViewModel = CartViewModel()
     
     @State private var isActive = false
     @State private var scale: CGFloat = 0.5
@@ -21,18 +23,47 @@ struct SplashView: View {
         
         if isActive {
             
-            if(authViewModel.isLoggedIn){
-                if(authViewModel.isNewCustomer){
-                    SignUpView().environmentObject(authViewModel).environmentObject(router)
-                                        
-                }else{
-                    MainTabView()
-                }
+            if(authViewModel.skipToMain){
                 
+                    MainTabView().environmentObject(authViewModel).environmentObject(mainRouter).environmentObject(cartViewModel)
             }else{
-                                
-                WellComeSliderView().environmentObject(authViewModel).environmentObject(router)
+                if(authViewModel.isLoggedIn){
+                    if(authViewModel.isNewCustomer) {
+                        NavigationStack(path: $authRouter.navPath) {
+                                // ✅ Set SignUpView as the ROOT for New Customers
+                                SignUpView()
+                                    .navigationDestination(for: AuthRouter.Auth.self) { destination in
+                                        switch destination {
+                                        case .login_phone: LoginView()
+                                        case .login_otp: OtpView()
+                                        case .signUpName: SignUpView()
+                                        case .signUpMap: SignUpMapView()
+                                        }
+                                    }
+                            }
+                            .environmentObject(authViewModel)
+                            .environmentObject(authRouter)
+                    }else{
+                        MainTabView().environmentObject(authViewModel).environmentObject(mainRouter).environmentObject(cartViewModel)
+
+                    }
+                    
+                }else{
+                    
+                        NavigationStack(path : $authRouter.navPath){
+                            WellComeSliderView().navigationDestination(for: AuthRouter.Auth.self){
+                                destination in
+                                switch destination{
+                                case .login_phone : LoginView()
+                                case .login_otp :OtpView()
+                                case .signUpName : SignUpView()
+                                case .signUpMap : SignUpMapView()
+                                }
+                            }
+                        }.environmentObject(authViewModel).environmentObject(authRouter)
+                }
             }
+            
             
             
         } else {

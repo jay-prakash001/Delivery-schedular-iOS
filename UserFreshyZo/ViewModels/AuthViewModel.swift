@@ -17,6 +17,8 @@ class AuthViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isLoggedIn: Bool = false
     
+    @Published var skipToMain : Bool = false
+    
     // MARK: - Login Screen
     
     @Published var phone: String = ""
@@ -31,16 +33,17 @@ class AuthViewModel: ObservableObject {
     @Published var canResend: Bool = false
     @Published var isNewCustomer: Bool = true
     
+//    @Published var wellComeSlider  = true
+    
     private var timer: Timer?
     
     // MARK: - Init
     
     init() {
-        getLoginState()
-        
         isLoggedIn = UserDefaults.standard.string(forKey: "auth_token") != nil
         isNewCustomer = UserDefaults.standard.bool(forKey: "isNewCustomer")
         phone = UserDefaults.standard.string(forKey: "userPhone") ?? ""
+        fullname = UserDefaults.standard.string(forKey: "fullName") ?? ""
     }
     
     deinit {
@@ -70,7 +73,7 @@ class AuthViewModel: ObservableObject {
     // MARK: - Login State
     
     func getLoginState() {
-        isLoggedIn = KeychainHelper.shared.isLoggedIn()
+//        isLoggedIn = KeychainHelper.shared.isLoggedIn()
     }
     
     // MARK: - Phone Input
@@ -82,6 +85,7 @@ class AuthViewModel: ObservableObject {
     
     func updateFullName(_ value : String){
         fullname = value
+        UserDefaults.standard.set(value, forKey:"fullName" )
     }
     
     // MARK: - Request OTP
@@ -134,6 +138,8 @@ class AuthViewModel: ObservableObject {
     func clearOTP() {
         otp = Array(repeating: "", count: 6)
     }
+    
+    
     
     func updateOtpRequested(value :Bool){
         otpRequested = value
@@ -199,7 +205,7 @@ class AuthViewModel: ObservableObject {
 
                         }
                     
-                
+                print("Verify otp \(response)")
                     
                     isNewCustomer =  response.message.localizedCaseInsensitiveContains("not a registered customer")
                     
@@ -209,6 +215,8 @@ class AuthViewModel: ObservableObject {
                         UserDefaults.standard.set(phone, forKey: "userPhone")
                     }
                         isLoggedIn = true
+                    
+                    print("islogged in \(isLoggedIn)   newCustomer \(isNewCustomer)")
 //                        if let token = response.data?.token {
 //                            // Save to UserDefaults (iOS equivalent of SharedPrefs)
 //                            UserDefaults.standard.set(token, forKey: "auth_token")
@@ -240,6 +248,10 @@ class AuthViewModel: ObservableObject {
         phone = ""
         clearOTP()
         otpRequested = false
+        UserDefaults.standard.removeObject( forKey: "auth_token")
+        UserDefaults.standard.removeObject( forKey: "isNewCustomer")
+        UserDefaults.standard.removeObject( forKey: "fullName")
+        UserDefaults.standard.removeObject( forKey: "userPhone")
 //        KeychainHelper.shared.saveLoginState(false)
     }
 }

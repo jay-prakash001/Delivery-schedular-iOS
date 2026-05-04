@@ -39,6 +39,6 @@ struct Material3OutLinedTextField: View {
                 .frame(height: 56)
                 .keyboardType(.numberPad)
         }
-        .padding(.horizontal)
+//        .padding(.horizontal)
     }
 }

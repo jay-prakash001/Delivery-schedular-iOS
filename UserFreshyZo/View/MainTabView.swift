@@ -5,7 +5,7 @@ struct MainTabView: View {
     @State private var showCart = false
     @EnvironmentObject var cartVM: CartViewModel
     @State private var selectedCategory = "All Products"
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var mainRouter: MainRouter
 
     // Logic to hide the floating cart on specific tabs (Wallet, Account, Cart)
     var shouldShowCart: Bool {

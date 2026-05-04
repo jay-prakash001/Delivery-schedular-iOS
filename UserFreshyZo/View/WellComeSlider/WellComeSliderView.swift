@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WellComeSliderView: View {
     @EnvironmentObject  var authViewModel : AuthViewModel
-    @EnvironmentObject  var router :Router
+    @EnvironmentObject  var router :AuthRouter
     
     
     
@@ -36,7 +36,6 @@ struct WellComeSliderView: View {
     
     var body: some View {
         
-        NavigationStack{
             
             VStack {
                 
@@ -68,8 +67,8 @@ struct WellComeSliderView: View {
                     
                     if  currentPage != slides.count - 1 {
                         Button("Skip") {
-    //                        router.replaceWithClearBackStack(with: .login_phone)
-                            navigateToLogin = true
+                            
+                            router.navigate(to:  .login_phone)
                         }
                         .font(.headline)
                         .foregroundColor(.gray)
@@ -121,8 +120,8 @@ struct WellComeSliderView: View {
                         }
                     }else{
                         
-    //                    router.replaceWithClearBackStack(with: .login_phone)
-                        navigateToLogin = true
+                        router.replaceWithClearBackStack(with: .login_phone)
+//                        navigateToLogin = /*true*/
                         
                     }
                 }
@@ -139,13 +138,13 @@ struct WellComeSliderView: View {
                 
             }
             
-            .navigationDestination(isPresented: $navigateToLogin,){
-                LoginView().environmentObject(authViewModel).environmentObject(router).navigationBarHidden(true)
-            }
+//            .navigationDestination(isPresented: $navigateToLogin,){
+//                LoginView().environmentObject(authViewModel).environmentObject(router).navigationBarHidden(true)
+//            }
         }
         
         
-    }
+    
     
 }
 

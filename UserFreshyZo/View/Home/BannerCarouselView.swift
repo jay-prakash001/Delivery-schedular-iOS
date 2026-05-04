@@ -18,8 +18,8 @@ struct BannerCarouselView: View {
         
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
         let bannerHeight: CGFloat = isPad ? 300 : 180
-        
         TabView(selection: $currentIndex) {
+            
             
             ForEach(Array(banners.enumerated()), id: \.element.id) { index, banner in
                 

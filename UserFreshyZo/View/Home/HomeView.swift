@@ -13,15 +13,20 @@ struct HomeView: View {
     @Binding var selectedTab: Int
     @Binding var selectedCategory: String
     
+    
     var body: some View {
         
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
         
-        NavigationStack {
             VStack(spacing: 0) {
                 HeaderView()
+
+            
                 
                 ScrollView(.vertical, showsIndicators: false) {
+                    
+                    DateList(data : vm.calendar)
+                        .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
                     VStack(spacing: isPad ? 40 : 30) {
                         BannerCarouselView(banners: vm.banners)
                             .padding(.top, 16) 
@@ -42,8 +47,7 @@ struct HomeView: View {
                 }
             }
             .background(Color(.systemGroupedBackground))
-        }
-        .navigationBarHidden(true)
+       
     }
 }
 

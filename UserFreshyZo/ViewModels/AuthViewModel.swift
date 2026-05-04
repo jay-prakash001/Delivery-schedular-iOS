@@ -23,6 +23,11 @@ class AuthViewModel: ObservableObject {
     
     @Published var phone: String = ""
     @Published var fullname: String = ""
+    @Published var address: String = ""
+    @Published var lat: String = ""
+
+    @Published var lng: String = ""
+
     @Published var otpRequested: Bool = false
     @Published var errorMessage: String? = nil
     
@@ -32,6 +37,7 @@ class AuthViewModel: ObservableObject {
     @Published var secondsRemaining: Int = 57
     @Published var canResend: Bool = false
     @Published var isNewCustomer: Bool = true
+    
     
 //    @Published var wellComeSlider  = true
     
@@ -241,6 +247,57 @@ class AuthViewModel: ObservableObject {
 
     }
     
+    
+    
+    func registerNewCustomer() {
+        
+        
+        
+        
+        Task{
+            
+            isLoading = true
+            do{
+                // 1. Prepare the name parts safely
+                let components = fullname.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: " ")
+                let firstName = components.first ?? ""
+                let lastName = components.count > 1 ? components.dropFirst().joined(separator: " ") : ""
+
+
+                let headers = ["Authorization" : UserDefaults.standard.string(forKey: "auth_token") ?? ""]
+                print("fullName \(fullname) lat \(lat) lng \(lng) address \(address) headers \(headers)")
+
+                // 2. Use them in your API call
+                let response : RegisterNewCustomerRes = try await APIService.shared.post(
+                    urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/signup",
+                    headers: headers,
+                    body: RegisterNewCustomerReq(
+                        first_name: firstName,
+                        last_name: lastName,
+                        lat: lat,
+                        lng: lng,
+                        address: address,
+                        mobile_no: phone
+                    )
+                )
+                
+                
+                print("Sign up \(response)")
+                
+                if response.status {
+                    isNewCustomer = false
+                    isLoggedIn = true
+                    UserDefaults.standard.set(false, forKey: "isNewCustomer")
+                    isLoading = false
+                }
+                
+            }catch {
+                isLoading = false
+                errorMessage = error.localizedDescription
+
+            }
+        }
+    }
     // MARK: - Logout
     
     func logout() {
@@ -252,6 +309,5 @@ class AuthViewModel: ObservableObject {
         UserDefaults.standard.removeObject( forKey: "isNewCustomer")
         UserDefaults.standard.removeObject( forKey: "fullName")
         UserDefaults.standard.removeObject( forKey: "userPhone")
-//        KeychainHelper.shared.saveLoginState(false)
     }
 }

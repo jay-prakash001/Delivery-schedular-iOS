@@ -39,20 +39,6 @@ struct GoogleMapsView: UIViewRepresentable {
             let camera = GMSCameraPosition.camera(withTarget: coord, zoom: uiView.camera.zoom)
             uiView.animate(to: camera)
         }
-//    func updateUIView(_ uiView: GMSMapView, context: Context) {
-//        guard let coord = locationManager.selectedCoordinate else { return }
-//        
-//        // Check if this update is coming from the user dragging the map
-//        // If it is, we skip the camera update to prevent the flicker
-//        if context.coordinator.isInternalUpdate {
-//            context.coordinator.isInternalUpdate = false
-//            return
-//        }
-//        
-//        // This part only runs when the "Use My Current Location" button is pressed
-//        let camera = GMSCameraPosition.camera(withTarget: coord, zoom: 15)
-//        uiView.animate(to: camera)
-//    }
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -88,29 +74,59 @@ struct GoogleMapsView: UIViewRepresentable {
 // MARK: - Main UI View
 struct SignUpMapView: View {
     @StateObject private var locationManager = LocationManager()
-    
+    @EnvironmentObject var authViewModel: AuthViewModel // Add this to access your VM
     var body: some View {
         VStack(spacing: 0) {
             // Address Display Header
             
-            // Map Section
-            ZStack {
+            ZStack(alignment: .center) { // 1. Set default alignment to Center
+                
+                // MARK: - Layer 1: Background Map
                 GoogleMapsView(locationManager: locationManager)
                     .edgesIgnoringSafeArea(.all)
                 
-                // Static Center Pin
+                // MARK: - Layer 2: Static Center Pin
+                // Since ZStack is .center, this stays perfectly in the middle
                 VStack {
                     Image("location_logo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 20, height: 20) // adjust size like an icon//                        .overlay(
-//
-                    Spacer().frame(height: 35)
+                        .frame(width: 25, height: 25)
+                    
+                    // This spacer ensures the 'pointy' part of your logo is at the center
+                    Spacer().frame(height: 40)
+                }
+                
+                // MARK: - Layer 3: Floating Action Button
+                VStack {
+                    Spacer() // 2. Pushes the HStack to the bottom
+                    
+                    HStack {
+                        Spacer() // 3. Pushes the Button to the right
+                        
+                        Button {
+                            locationManager.requestPermission()
+                        } label: {
+                            Image(systemName: "arrow.clockwise") // "refresh.fill" works too!
+                                .font(.title2).bold()
+                                .foregroundColor(.green)
+                                .frame(width: 56, height: 56)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 20) // Adjust for Home Indicator/Safe Area
+                    }
                 }
             }
-            
-            
             VStack(alignment: .leading, spacing: 5) {
+                
+                if let error = authViewModel.errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
                 Text("SELECTED ADDRESS")
                     .font(.caption2)
                     .fontWeight(.bold)
@@ -143,12 +159,19 @@ struct SignUpMapView: View {
             
             // Bottom Button
             Button(action: {
-                locationManager.requestPermission()
+//                locationManager.requestPermission()
+                authViewModel.registerNewCustomer()
+                
             }) {
                 HStack {
-                    Image(systemName: "location.fill")
-                    Text("Use My Current Location")
-                        .fontWeight(.semibold)
+                    if authViewModel.isLoggedIn{
+                        
+                        Image(systemName: "checkmark.circle.fill")
+                        Text("Done")
+                            .fontWeight(.semibold)
+                    }else{
+                        ProgressView().frame(width: 20)
+                    }
                 }
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -158,9 +181,29 @@ struct SignUpMapView: View {
             }
             .padding()
         }
+        // Observe coordinate via an Equatable String key
+        .onChange(of: coordinateKey(locationManager.selectedCoordinate)) { _ in
+            if let coord = locationManager.selectedCoordinate {
+                authViewModel.lat = String(coord.latitude)
+                authViewModel.lng = String(coord.longitude)
+            }
+        }
+        .onChange(of: locationManager.address) { newAddress in
+            authViewModel.address = newAddress
+        }
+    }
+    
+    // Build a stable key that changes when the coordinate meaningfully changes
+    private func coordinateKey(_ coord: CLLocationCoordinate2D?) -> String {
+        guard let c = coord else { return "nil" }
+        // Round to 6 decimals (~0.11m) to avoid tiny jitter causing updates
+        let lat = String(format: "%.6f", c.latitude)
+        let lng = String(format: "%.6f", c.longitude)
+        return lat + "," + lng
     }
 }
 
 #Preview {
     SignUpMapView()
 }
+

@@ -85,8 +85,7 @@ struct OtpView: View {
                 .padding(.top, 50)
                 .contentShape(Rectangle())
                 .onTapGesture { isFieldFocused = true }
-                
-                HStack(alignment: .center){
+                    HStack(alignment: .center){
                     
                     if let error = viewModel.errorMessage {
                         Text(error)

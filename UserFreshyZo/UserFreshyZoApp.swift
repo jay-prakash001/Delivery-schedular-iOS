@@ -30,6 +30,10 @@ struct UserFreshyZoApp: App {
         WindowGroup {
             
             SplashView()
+//            HomeCalendarDialog(calendarData: dummyCalendarData){
+//                
+//            }
+
                 .environmentObject(authViewModel)
                 .preferredColorScheme(.light)
         }

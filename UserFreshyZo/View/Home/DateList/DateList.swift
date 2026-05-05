@@ -13,14 +13,13 @@ struct DateList: View {
     // Receive data from parent
     let data: [CalendarData]
 
+    var onClick : ((Int) -> Void)
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 4) {
                 ForEach(Array(data.enumerated()), id: \.offset) { index, item in
-                    if(index == 0){
-                        
-                    }else{
-                    // check for previous and current date month if not same then show // or if current is 01 then only show the month
+                    if(index == 0 || item.dayNum == "01"){
+                        MonthLabelCalendaritem(month: resolveMonth(item.date))
                     }
                     DateListItem(
                         isToday: index == 0,
@@ -30,6 +29,7 @@ struct DateList: View {
                         hasDelivery: item.hasDelivery,
                         isSelected: selectedIndex == index
                     ) {
+                        onClick(index)
                         selectedIndex = index
                     }
                 }
@@ -61,5 +61,7 @@ func resolveMonth(_ dateString: String) -> String {
 // resolveMonth("2026-05-10") -> "May"
 
 #Preview {
-    DateList(data: [])
+    DateList(data: []){_ in 
+        
+    }
 }

@@ -10,6 +10,7 @@ import Combine
 struct BannerCarouselView: View {
     
     let banners: [Banner]
+    @EnvironmentObject var mainRouter : MainRouter
     
     @State private var currentIndex = 0
     private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
@@ -17,41 +18,30 @@ struct BannerCarouselView: View {
     var body: some View {
         
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
-        let bannerHeight: CGFloat = isPad ? 300 : 180
+        let bannerHeight: CGFloat = isPad ? 300 : 160
+        
         TabView(selection: $currentIndex) {
-            
-            
-            ForEach(Array(banners.enumerated()), id: \.element.id) { index, banner in
-                
-                // ✅ ONLY CHANGE: wrapped AsyncImage inside NavigationLink
-                NavigationLink(destination: MilkTrialView(banner: banner)) {
-                    
-                    AsyncImage(url: URL(string: banner.image)) { phase in
-                        switch phase {
-                            
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(maxWidth: .infinity)
-                                .frame(height: bannerHeight)
-                                .clipped()
-                            
-                        case .empty:
-                            Color.gray.opacity(0.2)
-                                .frame(height: bannerHeight)
-                            
-                        case .failure:
-                            Color.gray.opacity(0.2)
-                                .frame(height: bannerHeight)
-                            
-                        @unknown default:
-                            EmptyView()
-                        }
+            ForEach(Array(banners.enumerated()), id: \.offset) { index, banner in
+                AsyncImage(url: URL(string: banner.image)) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: bannerHeight)
+                            .clipped()
+                    case .empty, .failure:
+                        Color.gray.opacity(0.2)
+                            .frame(height: bannerHeight)
+                    @unknown default:
+                        EmptyView()
                     }
-                    .clipShape(RoundedRectangle(cornerRadius: isPad ? 18 : 12))
                 }
-                .buttonStyle(PlainButtonStyle()) // ← prevents blue tint on tap
+                .clipShape(RoundedRectangle(cornerRadius: isPad ? 18 : 12))
+                .contentShape(Rectangle()) // make entire tile tappable
+                
+                .buttonStyle(PlainButtonStyle())
                 .tag(index)
             }
         }
@@ -65,11 +55,16 @@ struct BannerCarouselView: View {
                 currentIndex = (currentIndex + 1) % banners.count
             }
         }
+        .onTapGesture {
+            // Navigate from the page itself to avoid TabView gesture conflicts
+            mainRouter.navigate(to: .milkbanneroffer(banner: banners[currentIndex]))
+        }
     }
 }
 
 #Preview {
     NavigationStack {
         BannerCarouselView(banners: HomeViewModel().banners)
+            .environmentObject(MainRouter()) // ensure router is injected
     }
 }

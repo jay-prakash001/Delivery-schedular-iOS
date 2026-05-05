@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HeaderView: View {
     
-    var walletAmount: String = "₹0"
+    var walletAmount: String = "0"
     
     var body: some View {
         
@@ -54,7 +54,7 @@ struct HeaderView: View {
                             height: iconSize * 0.60
                         )
                     
-                    Text(walletAmount)
+                    Text("₹\(walletAmount)")
                         .font(.system(size: isIPad ? 14 : 12, weight: .semibold))
                         .padding(.vertical, -8)
                 }
@@ -63,22 +63,22 @@ struct HeaderView: View {
 //            .padding(.top, 8)
             .padding(.top, isIPad ? 14 : 8)
             
-            Divider()
-                .background(Color.gray.opacity(0.3))
-            // MARK: Delivery Info (Proper Leading)
-            VStack(alignment: .leading, spacing: 5) {
-                
-                Text("Order before 09:00 pm for delivery tomorrow!")
-                    .font(.system(size: titleFontSize, weight: .semibold))
-                    .foregroundColor(.black)
-                
-                Text("Delivering fresh between 5 AM – 9 AM")
-                    .font(.system(size: subFontSize))
-                    .foregroundColor(.gray)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading) // 🔥 THIS FIXES CENTER ISSUE
-            .padding(.horizontal, horizontalPad)
-            .padding(.vertical, 10)
+//            Divider()
+//                .background(Color.gray.opacity(0.3))
+//            // MARK: Delivery Info (Proper Leading)
+//            VStack(alignment: .leading, spacing: 5) {
+//                
+//                Text("Order before 09:00 pm for delivery tomorrow!")
+//                    .font(.system(size: titleFontSize, weight: .semibold))
+//                    .foregroundColor(.black)
+//                
+//                Text("Delivering fresh between 5 AM – 9 AM")
+//                    .font(.system(size: subFontSize))
+//                    .foregroundColor(.gray)
+//            }
+//            .frame(maxWidth: .infinity, alignment: .leading) // 🔥 THIS FIXES CENTER ISSUE
+//            .padding(.horizontal, horizontalPad)
+//            .padding(.vertical, 10)
         }
         .background(Color.white)
     }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Banner: Identifiable, Codable{
+struct Banner: Identifiable, Codable, Hashable {
     let id : Int
     let name : String
     let image : String

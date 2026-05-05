@@ -16,6 +16,8 @@ final class MainRouter: ObservableObject {
 
     enum MainFlow: Hashable {
         case maintab
+        case milkbanneroffer(banner : Banner)
+        case testreports
     }
 
     func navigate(to screen: MainFlow) {

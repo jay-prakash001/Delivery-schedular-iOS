@@ -21,7 +21,7 @@ struct MainTabView: View {
                     .tabItem {
                         Label("Home", systemImage: "house.fill")
                     }
-                    .tag(0)
+                    .tag(0).environmentObject(mainRouter)
                 
                 ProductView(selectedTab: $selectedTab, selectedCategoryFromHome: selectedCategory)
                     .tabItem {

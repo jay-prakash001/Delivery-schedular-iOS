@@ -10,10 +10,12 @@ import Combine
 class HomeViewModel: ObservableObject{
 //    @Published var banners: [BannerFromApi] = []
     @Published var banners: [Banner] = []
-    @Published var categories: [Category] = []
+    @Published var categories: [ProductCategory] = []
     @Published var offers: [Offer] = []
     @Published var articles: [Artical] = []
     @Published var calendar : [CalendarData] = []
+    
+    @Published var homeRes : HomeRes? = nil
     
     // Default trial products used if a banner doesn't define its own
     static let defaultTrialProducts: [TrialProduct] = [
@@ -25,7 +27,7 @@ class HomeViewModel: ObservableObject{
     ]
     
     init(){
-//        loadMockData()
+        loadMockData()
         
         getHomeData()
     }
@@ -46,8 +48,8 @@ class HomeViewModel: ObservableObject{
                     urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/home", headers: headers)
                 
                 
-                print("")
                 
+                homeRes = response
                 if response.status{
                     response.data.banner.forEach { body in
                         let intId = Int(body.offerBannerId) ?? 0
@@ -63,6 +65,12 @@ class HomeViewModel: ObservableObject{
                     }
                     calendar = response.data.calendarData
                     
+                    response.data.productCategory.forEach{body in
+                        
+                            categories.append(body)
+                        
+                    }
+                    
                     
                 }
             }catch{
@@ -70,8 +78,8 @@ class HomeViewModel: ObservableObject{
             }
         }
     }
-//    func loadMockData() {
-//        
+    func loadMockData() {
+        
 //        banners = [
 //            Banner(
 //                id: 1,
@@ -101,33 +109,33 @@ class HomeViewModel: ObservableObject{
 //            )
 //        ]
 //        
-//        categories = [
-//            Category(id: 1, name: "All Products", image: "category1"),
+        categories = [
+            ProductCategory(image: "category1", name: "All Products")
 //            Category(id: 2, name: "Milk Products", image: "category2"),
 //            Category(id: 3, name: "Milk", image: "category3"),
-//        ]
-//        
-//        
-//        offers = [
-//            Offer(id: 1, title: "Milk and Ghee", subtitle: "buy ghee and paneer", price: 1000, image: "milk_ghee"),
-//            Offer(id: 2, title: "Paneer and Dahi", subtitle: "buy ghee and paneer", price: 500, image: "paneer_dahi"),
-//            Offer(id: 3, title: "Milk and Khowa", subtitle: "buy milk and khowa", price: 1000, image: "milk_khowa")
-//        ]
-//        
-//        articles = [
-//            Artical(
-//                id: 1,
-//                title: "Free Grazing vs Shed",
-//                description: "Free Grazing vs Shed Free Grazing vs Shed Free Grazing vs Shed",
-//                image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce"
-//            ),
-//            Artical(
-//                id: 2,
-//                title: "Buffalo Milk Benefits",
-//                description: "Free Grazing vs Shed Free Grazing vs Shed Free Grazing vs Shed",
-//                image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b"
-//            )
-//        ]
-//    }
+        ]
+        
+        
+        offers = [
+            Offer(id: 1, title: "Milk and Ghee", subtitle: "buy ghee and paneer", price: 1000, image: "milk_ghee"),
+            Offer(id: 2, title: "Paneer and Dahi", subtitle: "buy ghee and paneer", price: 500, image: "paneer_dahi"),
+            Offer(id: 3, title: "Milk and Khowa", subtitle: "buy milk and khowa", price: 1000, image: "milk_khowa")
+        ]
+        
+        articles = [
+            Artical(
+                id: 1,
+                title: "Free Grazing vs Shed",
+                description: "Free Grazing vs Shed Free Grazing vs Shed Free Grazing vs Shed",
+                image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce"
+            ),
+            Artical(
+                id: 2,
+                title: "Buffalo Milk Benefits",
+                description: "Free Grazing vs Shed Free Grazing vs Shed Free Grazing vs Shed",
+                image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b"
+            )
+        ]
+    }
     
 }

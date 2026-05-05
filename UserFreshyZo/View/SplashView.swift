@@ -11,9 +11,10 @@ struct SplashView: View {
     
     @EnvironmentObject private var authViewModel :AuthViewModel
     @StateObject var authRouter = AuthRouter()
-        @StateObject var mainRouter = MainRouter()
-        @StateObject var cartViewModel = CartViewModel()
-    
+    @StateObject var mainRouter = MainRouter()
+    @StateObject var cartViewModel = CartViewModel()
+    @StateObject private var vm = HomeViewModel()
+
     @State private var isActive = false
     @State private var scale: CGFloat = 0.5
     @State private var opacity = 0.5
@@ -24,43 +25,72 @@ struct SplashView: View {
         if isActive {
             
             if(authViewModel.skipToMain){
-                
-                    MainTabView().environmentObject(authViewModel).environmentObject(mainRouter).environmentObject(cartViewModel)
+                NavigationStack(path : $mainRouter.navPath){
+                    
+                    MainTabView()
+                        .environmentObject(authViewModel)
+                        .environmentObject(vm)
+                        .environmentObject(mainRouter)
+                        .environmentObject(cartViewModel)
+                        .navigationDestination(for: MainRouter.MainFlow.self){destination in
+                            switch destination {
+                            case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
+                            case .testreports : LabReportView()
+                            default : EmptyView()
+                            }
+                            
+                        }
+                }
             }else{
                 if(authViewModel.isLoggedIn){
                     if(authViewModel.isNewCustomer) {
                         NavigationStack(path: $authRouter.navPath) {
-                                // ✅ Set SignUpView as the ROOT for New Customers
-                                SignUpView()
-                                    .navigationDestination(for: AuthRouter.Auth.self) { destination in
-                                        switch destination {
-                                        case .login_phone: LoginView()
-                                        case .login_otp: OtpView()
-                                        case .signUpName: SignUpView()
-                                        case .signUpMap: SignUpMapView()
-                                        }
+                            // ✅ Set SignUpView as the ROOT for New Customers
+                            SignUpView()
+                                .navigationDestination(for: AuthRouter.Auth.self) { destination in
+                                    switch destination {
+                                    case .login_phone: LoginView()
+                                    case .login_otp: OtpView()
+                                    case .signUpName: SignUpView()
+                                    case .signUpMap: SignUpMapView()
                                     }
-                            }
-                            .environmentObject(authViewModel)
-                            .environmentObject(authRouter)
+                                }
+                        }
+                        .environmentObject(authViewModel)
+                        .environmentObject(authRouter)
                     }else{
-                        MainTabView().environmentObject(authViewModel).environmentObject(mainRouter).environmentObject(cartViewModel)
-
+                        NavigationStack(path : $mainRouter.navPath){
+                            
+                            MainTabView()
+                                .environmentObject(authViewModel)
+                                .environmentObject(mainRouter)
+                                .environmentObject(vm)
+                                .environmentObject(cartViewModel)
+                                .navigationDestination(for: MainRouter.MainFlow.self){destination in
+                                    switch destination {
+                                    case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
+                                    case .testreports : LabReportView()
+                                    default : EmptyView()
+                                    }
+                                    
+                                }
+                        }
+                        
                     }
                     
                 }else{
                     
-                        NavigationStack(path : $authRouter.navPath){
-                            WellComeSliderView().navigationDestination(for: AuthRouter.Auth.self){
-                                destination in
-                                switch destination{
-                                case .login_phone : LoginView()
-                                case .login_otp :OtpView()
-                                case .signUpName : SignUpView()
-                                case .signUpMap : SignUpMapView()
-                                }
+                    NavigationStack(path : $authRouter.navPath){
+                        WellComeSliderView().navigationDestination(for: AuthRouter.Auth.self){
+                            destination in
+                            switch destination{
+                            case .login_phone : LoginView()
+                            case .login_otp :OtpView()
+                            case .signUpName : SignUpView()
+                            case .signUpMap : SignUpMapView()
                             }
-                        }.environmentObject(authViewModel).environmentObject(authRouter)
+                        }
+                    }.environmentObject(authViewModel).environmentObject(authRouter)
                 }
             }
             

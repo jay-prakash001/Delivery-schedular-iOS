@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TrialProduct: Identifiable, Codable {
+struct TrialProduct: Identifiable, Codable, Equatable, Hashable {
     let id: Int
     let name: String
     let mrp: Float        // Original price

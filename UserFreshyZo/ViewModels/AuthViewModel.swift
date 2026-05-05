@@ -50,6 +50,9 @@ class AuthViewModel: ObservableObject {
         isNewCustomer = UserDefaults.standard.bool(forKey: "isNewCustomer")
         phone = UserDefaults.standard.string(forKey: "userPhone") ?? ""
         fullname = UserDefaults.standard.string(forKey: "fullName") ?? ""
+        
+        print("token  \(UserDefaults.standard.string(forKey : "auth_token"))")
+
     }
     
     deinit {

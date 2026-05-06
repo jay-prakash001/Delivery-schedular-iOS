@@ -27,14 +27,14 @@ struct ReportCardView: View {
                     .kerning(1.5)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 20)
+            .padding(.vertical, 10)
             .background(
                 LinearGradient(
                     colors: [Color(hex: "#2E7D32"), Color(hex: "#43A047")],
                     startPoint: .leading, endPoint: .trailing
                 )
             )
-            .cornerRadius(16, corners: [.topLeft, .topRight])
+            .cornerRadius(10, corners: [.topLeft, .topRight])
 
             // Column Headers
             HStack {
@@ -49,8 +49,8 @@ struct ReportCardView: View {
             }
             .font(.caption).fontWeight(.semibold)
             .foregroundColor(Color(hex: "#2E7D32"))
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             .background(Color.white)
 
             Divider()
@@ -59,15 +59,15 @@ struct ReportCardView: View {
             VStack(spacing: 0) {
                 ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
                     HStack {
-                        Text(row.0)
+                        Text(row.0.capitalized)
                             .frame(width: 30, alignment: .leading)
                             .foregroundColor(.secondary)
-                        Text(row.1)
+                        Text(row.1.description.capitalized)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Text(row.2)
+                        Text(row.2.description.capitalized)
                             .frame(width: 90, alignment: .center)
                             .foregroundColor(.secondary)
-                        Text(row.3)
+                        Text(row.3.description.capitalized)
                             .font(.caption).fontWeight(.semibold)
                             .foregroundColor(Color(hex: "#2E7D32"))
                             .padding(.horizontal, 10)
@@ -77,8 +77,8 @@ struct ReportCardView: View {
                             .frame(width: 70, alignment: .center)
                     }
                     .font(.subheadline)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
                     .background(Color.white)
 
                     if index < rows.count - 1 {

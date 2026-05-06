@@ -10,26 +10,30 @@ struct ProductView: View {
     @Binding var selectedTab: Int
     let selectedCategoryFromHome: String
 
-    @StateObject private var vm = ProductViewModel()
+    @EnvironmentObject private var vm : ProductViewModel
 
     var body: some View {
         VStack(spacing: 0) {
 
-            ProductHeaderView(selectedTab: $selectedTab, vm: vm)
+            ProductHeaderView(selectedTab: $selectedTab)
 
             DeliveryBannerView()
 
             HStack(spacing: 0) {
-                CategorySidebarView(vm: vm)
-                ProductListView(vm: vm)
+                CategorySidebarView()
+                ProductListView()
                     .frame(maxWidth: .infinity)
             }
         }
         .background(Color(.systemGroupedBackground))
         .navigationBarHidden(true)
         .onAppear {
-            vm.fetchMockCategories()
-            vm.fetchProducts()
+            
+            
+            
+            
+//            vm.fetchMockCategories()
+//            vm.fetchProducts()
             // Map incoming category from Home to actual category name
             let mapped: String
             switch selectedCategoryFromHome {

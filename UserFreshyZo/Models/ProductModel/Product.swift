@@ -15,8 +15,8 @@ struct Product: Identifiable, Codable {
     let description: String
     let image: String
     let price: String
-    let mrp: String
-    let categoryName: String
+    let dairyMrp: String
+    let productSubCategoryName: String
     
     enum CodingKeys: String, CodingKey {
         case id = "product_id"
@@ -25,14 +25,30 @@ struct Product: Identifiable, Codable {
         case description = "description"
         case image = "dairy_product_image"
         case price = "product_price"
-        case mrp = "dairy_mrp"
-        case categoryName = "product_category_name"
+        case dairyMrp = "dairy_mrp"
+        case productSubCategoryName = "product_category_name"
     }
     
     var imageURL: URL? {
         URL(string: "https://freshyzo.com/admin/uploads/product_image/\(image)")
     }
 }
+
+
+//var id: String { productId } // Identifiable conformance
+//
+//let productId: String
+//let productCategoryId: String
+//let productSubCategoryId: String
+//let productName: String
+//let dairyProductImage: String
+//let shortDesc: String
+//let nutriVal: String
+//let unit: String
+//let productPrice: String
+//let subscription: String
+//let productCategoryName: String
+//let productSubCategoryName: String
 
 extension Product {
 

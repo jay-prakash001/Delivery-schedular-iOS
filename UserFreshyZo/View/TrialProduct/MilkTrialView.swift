@@ -9,6 +9,7 @@ struct MilkTrialView: View {
     @State private var selectedDate: Date?
     @State private var showDatePicker = false
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var mainRouter : MainRouter
 
     private var products: [TrialProduct] {
         banner.trialProducts ?? HomeViewModel.defaultTrialProducts
@@ -21,44 +22,25 @@ struct MilkTrialView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
+        ZStack {
+            ScrollView {
+                VStack(spacing: 16) {
 
-                // ── Subview 1: Banner Image ───────────────────────────────
-                TrialBannerImageView(imageURL: banner.image)
+                    TrialBannerImageView(imageURL: banner.image)
 
-                // ── Subview 2: Subscription Details Card ─────────────────
-                SubscriptionDetailsView(
-                    products: products,
-                    selectedProduct: $selectedProduct,
-                    selectedDate: $selectedDate,
-                    showDatePicker: $showDatePicker
-                )
+                    SubscriptionDetailsView(
+                        products: products,
+                        selectedProduct: $selectedProduct,
+                        selectedDate: $selectedDate,
+                        showDatePicker: $showDatePicker
+                    )
 
-                // ── Subview 3: Price Total Card ───────────────────────────
-                PriceTotalView(product: selectedProduct)
+                    PriceTotalView(product: selectedProduct)
 
-                Spacer(minLength: 100)
-            }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.primary)
-                        .fontWeight(.semibold)
+                    Spacer(minLength: 100)
                 }
-            }
-            ToolbarItem(placement: .principal) {
-                HStack {
-                    Text("Get Milk Trial")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 16) // 👈 ONLY padding source
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -78,7 +60,6 @@ struct MilkTrialView: View {
     }
 }
 
-// MARK: - Subview 1: Banner Image
 struct TrialBannerImageView: View {
     let imageURL: String
 
@@ -89,20 +70,19 @@ struct TrialBannerImageView: View {
                 image
                     .resizable()
                     .scaledToFill()
+                    .frame(minWidth: 0, maxWidth: .infinity) // 👈 Ensure it takes available width
+                    .frame(height: 160)                      // 👈 Set height here
+                    .clipped()                               // 👈 Chop off the overflow
             case .empty, .failure:
                 Color.gray.opacity(0.2)
+                    .frame(height: 160)
             @unknown default:
                 EmptyView()
             }
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 200)
-        .clipped()
-        .cornerRadius(12)
-        .padding(.horizontal, 16)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
-
 // MARK: - Subview 2: Subscription Details Card
 struct SubscriptionDetailsView: View {
     let products: [TrialProduct]
@@ -128,7 +108,6 @@ struct SubscriptionDetailsView: View {
             // ── Subview 2b: Date Picker ───────────────────────────────────
             DatePickerFieldView(selectedDate: $selectedDate, showDatePicker: $showDatePicker)
         }
-        .padding()
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)

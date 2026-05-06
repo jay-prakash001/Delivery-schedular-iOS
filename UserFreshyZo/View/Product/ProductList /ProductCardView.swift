@@ -57,7 +57,7 @@ struct ProductCardView: View {
                     // Tappable info area → navigates to detail
                     VStack(alignment: .leading, spacing: 6) {
                         
-                        Text(product.categoryName)
+                        Text(product.productSubCategoryName)
                             .font(.system(size: isPad ? 20 : 15, weight: .semibold))
                             .foregroundColor(Color("AppGreenColor"))
                         
@@ -82,13 +82,13 @@ struct ProductCardView: View {
                             Text("₹\(product.price)")
                                 .font(.system(size: isPad ? 18 : 15, weight: .bold))
                             
-                            Text("₹\(product.mrp)")
+                            Text("₹\(product.dairyMrp)")
                                 .font(.system(size: isPad ? 14 : 10))
                                 .foregroundColor(.gray)
                                 .strikethrough()
                             
                             if let price = Double(product.price),
-                               let mrp = Double(product.mrp),
+                               let mrp = Double(product.dairyMrp),
                                mrp > 0 {
                                 let raw = ((mrp - price) / mrp) * 100
                                 if raw.isFinite {

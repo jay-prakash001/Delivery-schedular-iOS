@@ -31,7 +31,7 @@ struct BottomBrandingView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, isPad ? 40 : 16)
         .padding(.vertical, isPad ? 80 : 40)
-        .background(Color(.systemGroupedBackground))
+        .background(Color(.white))
     }
 }
 

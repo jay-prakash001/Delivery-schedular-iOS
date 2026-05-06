@@ -16,7 +16,7 @@ struct CategoryPositionKey: PreferenceKey {
 // MARK: - ProductListView
 struct ProductListView: View {
 
-    @ObservedObject var vm: ProductViewModel
+    @EnvironmentObject var vm: ProductViewModel
 
     // Scroll trigger — only set from tap, never from finger scroll
     @State private var tapScrollTarget: String? = nil

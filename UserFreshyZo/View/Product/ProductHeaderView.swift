@@ -9,7 +9,7 @@ import SwiftUI
 struct ProductHeaderView: View {
     
     @Binding var selectedTab: Int
-    @ObservedObject var vm: ProductViewModel
+    @EnvironmentObject var vm: ProductViewModel
 
     var body: some View {
         let isPad = UIDevice.current.userInterfaceIdiom == .pad

@@ -52,12 +52,12 @@ struct ProductInfoCardView: View {
             HStack(alignment: .center, spacing: 10) {
                 Text("₹\(product.price)")
                     .font(.system(size: isPad ? 26 : 20, weight: .bold))
-                Text("₹\(product.mrp)")
+                Text("₹\(product.dairyMrp)")
                     .font(.system(size: isPad ? 16 : 13))
                     .foregroundColor(.gray)
                     .strikethrough()
                 if let price = Double(product.price),
-                   let mrp = Double(product.mrp), mrp > 0 {
+                   let mrp = Double(product.dairyMrp), mrp > 0 {
                     let raw = ((mrp - price) / mrp) * 100
                     if raw.isFinite {
                         Text("\(Int(max(0, raw)))% OFF")

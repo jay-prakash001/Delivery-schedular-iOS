@@ -7,7 +7,6 @@ struct AccountView: View {
     @StateObject var vm = AccountViewModel()
     
     var body: some View {
-        NavigationStack {                                    // ← add this
             VStack(spacing: 0) {
                 AccountHeaderView()
                     .padding()
@@ -37,7 +36,7 @@ struct AccountView: View {
                 Button("Cancel", role: .cancel) {}
             }
         }                                                   // ← close NavigationStack
-    }
+    
 }
 
 // MARK: - Preview

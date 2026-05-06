@@ -7,7 +7,7 @@ import SwiftUI
 
 struct CategorySidebarView: View {
 
-    @ObservedObject var vm: ProductViewModel
+    @EnvironmentObject var vm: ProductViewModel
     private let isIPad = UIDevice.current.userInterfaceIdiom == .pad
 
     var body: some View {

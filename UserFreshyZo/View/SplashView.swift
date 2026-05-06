@@ -28,10 +28,6 @@ struct SplashView: View {
                 NavigationStack(path : $mainRouter.navPath){
                     
                     MainTabView()
-                        .environmentObject(authViewModel)
-                        .environmentObject(vm)
-                        .environmentObject(mainRouter)
-                        .environmentObject(cartViewModel)
                         .navigationDestination(for: MainRouter.MainFlow.self){destination in
                             switch destination {
                             case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
@@ -41,6 +37,10 @@ struct SplashView: View {
                             
                         }
                 }
+                .environmentObject(authViewModel)
+                .environmentObject(vm)
+                .environmentObject(mainRouter)
+                .environmentObject(cartViewModel)
             }else{
                 if(authViewModel.isLoggedIn){
                     if(authViewModel.isNewCustomer) {
@@ -62,10 +62,6 @@ struct SplashView: View {
                         NavigationStack(path : $mainRouter.navPath){
                             
                             MainTabView()
-                                .environmentObject(authViewModel)
-                                .environmentObject(mainRouter)
-                                .environmentObject(vm)
-                                .environmentObject(cartViewModel)
                                 .navigationDestination(for: MainRouter.MainFlow.self){destination in
                                     switch destination {
                                     case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
@@ -75,6 +71,10 @@ struct SplashView: View {
                                     
                                 }
                         }
+                        .environmentObject(authViewModel)
+                        .environmentObject(mainRouter)
+                        .environmentObject(vm)
+                        .environmentObject(cartViewModel)
                         
                     }
                     

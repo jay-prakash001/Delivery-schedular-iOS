@@ -31,7 +31,7 @@ struct MilkRow: View {
                 .frame(width: isPad ? 120 : 80, alignment: .leading)
 
             
-            Text(value)
+            Text(value.capitalized)
 //                .frame(width: 60, alignment: .trailing)
                 .frame(width: isPad ? 90 : 60, alignment: .trailing)
 

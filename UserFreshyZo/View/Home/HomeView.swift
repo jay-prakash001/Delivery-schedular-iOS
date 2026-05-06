@@ -46,8 +46,8 @@ struct HomeView: View {
                                 selectedTab = 1
                             }
                             MilkTestReportCard()
-                            ComboOfferSection(offers: vm.offers)
-                            ArticleSection(articles: vm.articles)
+//                            ComboOfferSection(offers: vm.offers)
+                            ArticleSection(articles: vm.homeRes?.data.blogs ?? [])
                             SuggestionView()
                             BottomBrandingView()
                         }
@@ -56,7 +56,7 @@ struct HomeView: View {
                     }
                 }
                 
-                .background(Color(.systemGroupedBackground))
+                .background(Color(.white))
             
             
             if let date = selectedDate {
@@ -67,6 +67,15 @@ struct HomeView: View {
                     }
                 }
             }
+            if let toastString = vm.toastString {
+                VStack {
+                    Spacer()
+                    ToastView(message: toastString)
+                        .padding(.bottom, 20) // 👈 spacing from bottom
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity) // 👈 IMPORTANT
+            }
+            
         }.onTapGesture {
             withAnimation{
                 selectedDate = nil

@@ -8,23 +8,23 @@
 import SwiftUI
 
 struct ArticleSection: View {
-    let articles: [Artical]
+    let articles: [HomeBlogs]
     var body: some View {
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
 
         VStack(alignment: .leading) {
                     Text("What type of milk are you familiar with!")
 //                        .font(.headline)
-                .font(.system(size: isPad ? 24 : 17, weight: .bold))
+                .font(.system(size: isPad ? 24 : 14, weight: .bold))
                         .padding(.horizontal)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
-                           HStack(spacing: isPad ? 24 : 20) {
+                           HStack(spacing: isPad ? 24 : 10) {
                                ForEach(articles) { article in
                                    ArticleCard(article: article)
                                }
                            }
-                       }
+                    }
                     }
                 }
     }

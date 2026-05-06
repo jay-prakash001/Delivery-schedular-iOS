@@ -33,7 +33,7 @@ struct SubscriptionView: View {
             let viewModel = SubscriptionViewModel()
             viewModel.setup(
                 basePrice: Int(product.price) ?? 0,
-                mrpPrice:  Int(product.mrp)   ?? 0,
+                mrpPrice:  Int(product.dairyMrp)   ?? 0,
                 initialQty: initialQty
             )
             return viewModel
@@ -195,12 +195,12 @@ struct SubscriptionView: View {
                 HStack(spacing: 8) {
                     Text("₹\(product.price)")
                         .font(.system(size: isPad ? 18 : 16, weight: .bold))
-                    Text("₹\(product.mrp)")
+                    Text("₹\(product.dairyMrp)")
                         .font(.system(size: 13))
                         .foregroundColor(.gray)
                         .strikethrough()
                     if let price = Double(product.price),
-                       let mrp   = Double(product.mrp), mrp > 0 {
+                       let mrp   = Double(product.dairyMrp), mrp > 0 {
                         let pct = Int(((mrp - price) / mrp) * 100)
                         Text("\(pct)% OFF")
                             .font(.system(size: 11, weight: .semibold))

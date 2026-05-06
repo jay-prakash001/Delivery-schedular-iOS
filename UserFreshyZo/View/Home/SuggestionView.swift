@@ -11,6 +11,7 @@ struct SuggestionView: View {
     
     @State private var suggestionText: String = ""
     
+    @EnvironmentObject var homeViewModel : HomeViewModel
     var body: some View {
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
         
@@ -22,12 +23,12 @@ struct SuggestionView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Tell us what you want!")
 //                        .font(.system(size: 18, weight: .bold))
-                        .font(.system(size: isPad ? 24 : 18, weight: .bold))
+                        .font(.system(size: isPad ? 24 : 16, weight: .bold))
 
                     
                     Text("Suggest products that you want us to make available to shop or feature to add on FreshyZo")
 //                        .font(.system(size: 14))
-                        .font(.system(size: isPad ? 18 : 14))
+                        .font(.caption)
                         .foregroundColor(.gray)
                 }
                 
@@ -53,17 +54,52 @@ struct SuggestionView: View {
             // Input + Button Row
             HStack(spacing: 12) {
                 
-                TextField("type here..", text: $suggestionText)
-//                    .padding()
-                    .padding(isPad ? 18 : 12)
-
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color("AppGreenColor"), lineWidth: 1.5)
-                    )
+//                TextField("type here..", text: $suggestionText)
+////                    .padding()
+//                    .padding(isPad ? 18 : 12)
+//
+//                    .background(
+//                        RoundedRectangle(cornerRadius: 12)
+//                            .stroke(Color("AppGreenColor"), lineWidth: 1.5)
+//                    )
+//
                 
+                let lineHeight: CGFloat = isPad ? 22 : 18
+
+                ZStack(alignment: .topLeading) {
+
+                    if suggestionText.isEmpty {
+                        Text("type here..")
+                            .foregroundColor(.gray)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                    }
+
+                    TextEditor(text: $suggestionText)
+                        .frame(
+                            minHeight: lineHeight * 1,   // 👈 1 line
+                            maxHeight: lineHeight * 5    // 👈 5 lines max
+                        )
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .background(Color.clear)
+                        .scrollContentBackground(.hidden) // cleaner look (iOS 16+)
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color("AppGreenColor"), lineWidth: 1.5)
+                )
                 Button(action: {
-                    print("Send tapped")
+                        
+                        
+                        homeViewModel.addSugestion(suggestionText)
+                     
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                            suggestionText = ""
+                        }
+
+                        homeViewModel.addSugestion(suggestionText)
+
                 }) {
                     Text("Send")
                         .foregroundColor(.white)

@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     
     @EnvironmentObject private var vm:  HomeViewModel
+    @EnvironmentObject private var productViewModel : ProductViewModel
     @EnvironmentObject var mainRouter : MainRouter
     @Binding var selectedTab: Int
     @Binding var selectedCategory: String
@@ -42,7 +43,7 @@ struct HomeView: View {
                             BannerCarouselView(banners: vm.banners)
                             CategoryGridView(categories: vm.categories) { category in
                                 
-                                selectedCategory = category.name
+                                productViewModel.updateSubCategoryByCategoryId(  category.id)
                                 selectedTab = 1
                             }
                             MilkTestReportCard()

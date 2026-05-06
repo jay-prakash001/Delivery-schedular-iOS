@@ -14,6 +14,7 @@ struct SplashView: View {
     @StateObject var mainRouter = MainRouter()
     @StateObject var cartViewModel = CartViewModel()
     @StateObject private var vm = HomeViewModel()
+    @State private var productViewModel : ProductViewModel = ProductViewModel()
 
     @State private var isActive = false
     @State private var scale: CGFloat = 0.5
@@ -32,7 +33,7 @@ struct SplashView: View {
                             switch destination {
                             case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
                             case .testreports : LabReportView()
-                            case . productdetails(let id ) : Text("product id \(id)")
+                            case . productdetails(let id ) : ProductDetailView(id : id)
 
                             default : EmptyView()
                             }
@@ -43,6 +44,7 @@ struct SplashView: View {
                 .environmentObject(vm)
                 .environmentObject(mainRouter)
                 .environmentObject(cartViewModel)
+                .environmentObject(productViewModel)
             }else{
                 if(authViewModel.isLoggedIn){
                     if(authViewModel.isNewCustomer) {
@@ -68,7 +70,7 @@ struct SplashView: View {
                                     switch destination {
                                     case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
                                     case .testreports : LabReportView()
-                                    case . productdetails(let id ) : Text("product id \(id)")
+                                    case . productdetails(let id ) : ProductDetailView(id : id)
                                     default : EmptyView()
                                     }
                                     
@@ -78,6 +80,8 @@ struct SplashView: View {
                         .environmentObject(mainRouter)
                         .environmentObject(vm)
                         .environmentObject(cartViewModel)
+                        .environmentObject(productViewModel)
+
                         
                     }
                     

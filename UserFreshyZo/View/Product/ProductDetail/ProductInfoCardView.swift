@@ -8,20 +8,20 @@
 import SwiftUI
 
 struct ProductInfoCardView: View {
-    let product: Product
+    let product: ProductFromApi
     let isPad: Bool
     @Binding var subscriptionQty: Int
 
     private var displayTitle: String {
-           let name = product.cleanName
-               .replacingOccurrences(of: "\n", with: "")
-               .trimmingCharacters(in: .whitespaces)
-           return "FreshyZo \(name)"
-       }
+        let name = product.cleanName
+            .replacingOccurrences(of: "\n", with: "")
+            .trimmingCharacters(in: .whitespaces)
+        return "FreshyZo \(name)"
+    }
     
     private var unitText: String {
-            product.quantityText.trimmingCharacters(in: .whitespaces)
-        }
+        product.quantityText.trimmingCharacters(in: .whitespaces)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -37,7 +37,6 @@ struct ProductInfoCardView: View {
                 .font(.system(size: isPad ? 16 : 14))
                 .foregroundColor(.gray)
             
-            // ── unit pill  e.g. "500ml" ──
             if !unitText.isEmpty {
                 Text(unitText)
                     .font(.system(size: isPad ? 15 : 13, weight: .semibold))
@@ -48,15 +47,14 @@ struct ProductInfoCardView: View {
                     .cornerRadius(20)
             }
 
-
             HStack(alignment: .center, spacing: 10) {
-                Text("₹\(product.price)")
+                Text("₹\(product.productPrice)")
                     .font(.system(size: isPad ? 26 : 20, weight: .bold))
                 Text("₹\(product.dairyMrp)")
                     .font(.system(size: isPad ? 16 : 13))
                     .foregroundColor(.gray)
                     .strikethrough()
-                if let price = Double(product.price),
+                if let price = Double(product.productPrice),
                    let mrp = Double(product.dairyMrp), mrp > 0 {
                     let raw = ((mrp - price) / mrp) * 100
                     if raw.isFinite {
@@ -90,3 +88,4 @@ struct ProductInfoCardView: View {
         .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
     }
 }
+

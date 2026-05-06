@@ -6,27 +6,31 @@
 import SwiftUI
 
 struct CategorySidebarView: View {
-
+    
     @EnvironmentObject var vm: ProductViewModel
     private let isIPad = UIDevice.current.userInterfaceIdiom == .pad
-
+    
+    // Precompute a concrete array to help the type-checker
+    private var categories: [SubCategory] {
+        vm.productData?.subCategory ?? []
+    }
+    
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView(showsIndicators: false) {
                 VStack(spacing: isIPad ? 20 : 10) {
-                    ForEach(vm.categories) { category in
+                    ForEach(categories) { category in
                         CategoryTileView(
                             category: category,
-                            isSelected: vm.selectedCategory == category.name,
+                            isSelected: vm.selectedCategoryId == category.productSubCategoryId,
                             isIPad: isIPad
                         )
-                        .id(category.name)
+                        .id(category.productSubCategoryName)
                         .onTapGesture {
-                            // ✅ Set BOTH:
-                            // selectedCategory → highlights sidebar tile instantly
-                            // tapRequestedCategory → tells ProductListView to scroll
-                            vm.selectedCategory = category.name
-                            vm.tapRequestedCategory = category.name
+                            // Highlight sidebar tile instantly
+                            vm.selectedCategoryId = category.productSubCategoryId
+                            // Tell ProductListView to scroll
+                            vm.tapRequestedCategory = category.productSubCategoryId
                         }
                     }
                 }
@@ -35,9 +39,9 @@ struct CategorySidebarView: View {
             }
             .frame(width: isIPad ? 160 : 90)
             .background(Color(.systemGroupedBackground))
-
+            
             // Auto-scroll sidebar to keep active tile visible during finger scroll
-            .onChange(of: vm.selectedCategory) { _, newValue in
+            .onChange(of: vm.selectedCategoryId) { _, newValue in
                 withAnimation(.easeInOut(duration: 0.25)) {
                     proxy.scrollTo(newValue, anchor: .center)
                 }
@@ -48,29 +52,38 @@ struct CategorySidebarView: View {
 
 // MARK: - Category Tile
 struct CategoryTileView: View {
-    let category: CategorySidebar
+    let category: SubCategory
     let isSelected: Bool
     let isIPad: Bool
-
+    
     var body: some View {
         VStack(spacing: isIPad ? 10 : 6) {
-
-            if UIImage(named: category.image) != nil {
-                Image(category.image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: isIPad ? 80 : 38)
-            } else {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.15))
-                    .frame(height: isIPad ? 80 : 38)
-                    .overlay(
-                        Image(systemName: "photo")
-                            .foregroundColor(.gray.opacity(0.4))
-                    )
+            let urlString = category.productCategoryImage.isEmpty
+            ? "https://freshyzo.com/admin/uploads/product_image/975021742984753b4d0221b.JPG"
+            : category.productCategoryImage
+            
+            AsyncImage(url: URL(string: urlString)) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: isIPad ? 80 : 38)
+                    
+                case .empty:
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.1))
+                        .frame(height: isIPad ? 80 : 38)
+                        .overlay(ProgressView().scaleEffect(0.8))
+                    
+                case .failure, _:
+                    placeholderView
+                @unknown default:
+                    placeholderView
+                }
             }
-
-            Text(category.name)
+            
+            Text(category.productSubCategoryName)
                 .font(.system(size: isIPad ? 16 : 11,
                               weight: isSelected ? .semibold : .regular))
                 .foregroundColor(isSelected ? .green : .gray)
@@ -93,5 +106,17 @@ struct CategoryTileView: View {
                 radius: isSelected ? 4 : 2, y: 2)
         .scaleEffect(isSelected ? 1.04 : 1.0)
         .animation(.easeInOut(duration: 0.2), value: isSelected)
+    }
+    
+    
+    @ViewBuilder
+    private var placeholderView: some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(Color.gray.opacity(0.15))
+            .frame(height: isIPad ? 80 : 38)
+            .overlay(
+                Image(systemName: "photo")
+                    .foregroundColor(.gray.opacity(0.4))
+            )
     }
 }

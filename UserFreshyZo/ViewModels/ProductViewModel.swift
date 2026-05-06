@@ -9,10 +9,10 @@ import Combine
 @MainActor
 class ProductViewModel: ObservableObject {
 
-    @Published var products: [Product] = []
+    @Published var products: [ProductFromApi] = []
     @Published var categories: [CategorySidebar] = []
-    @Published var selectedCategory: String = ""
-    @Published var groupedProducts: [String: [Product]] = [:]
+    @Published var selectedCategoryId: String = ""
+    @Published var groupedProducts: [String: [ProductFromApi]] = [:]
     
     
     @Published var productData: ProductData? = nil
@@ -20,7 +20,7 @@ class ProductViewModel: ObservableObject {
     // ✅ Only set from tap — never from scroll
     @Published var tapRequestedCategory: String? = nil
 
-    let categoryOrder = ["Milk", "Dahi", "khowa", "Paneer", "Ghee"]
+    var categoryOrder = ["Milk", "Dahi", "khowa", "Paneer", "Ghee"]
     
     init(){
         getProductList()
@@ -37,6 +37,9 @@ class ProductViewModel: ObservableObject {
                 
                 if(response.status){
                     productData = response.data
+                    products = response.data.productList
+                    categoryOrder = response.data.subCategory.map{$0.productSubCategoryId}
+                    self.groupedProducts = Dictionary(grouping: products) { $0.cleanCategory }
                 }
                 
                 
@@ -54,41 +57,31 @@ class ProductViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Fetch Products
-    func fetchProducts() {
-        guard let url = URL(string: "https://freshyzo.com/admin/Customer_App_Api/fetch_product") else { return }
-
-        Task {
-            do {
-                let (data, _) = try await URLSession.shared.data(from: url)
-                let decoded = try JSONDecoder().decode([Product].self, from: data)
-                self.products = decoded
-                self.groupedProducts = Dictionary(grouping: decoded) { $0.cleanCategory }
-                if self.selectedCategory.isEmpty {
-                    self.selectedCategory = self.categoryOrder.first ?? ""
-                }
-            } catch {
-                print("Fetch/Decode error:", error)
-            }
-        }
-    }
+//    // MARK: - Fetch Products
+//    func fetchProducts() {
+//        guard let url = URL(string: "https://freshyzo.com/admin/Customer_App_Api/fetch_product") else { return }
+//
+//        Task {
+//            do {
+//                let (data, _) = try await URLSession.shared.data(from: url)
+//                let decoded = try JSONDecoder().decode([Product].self, from: data)
+//                self.products = decoded
+//                self.groupedProducts = Dictionary(grouping: decoded) { $0.cleanCategory }
+//                if self.selectedCategory.isEmpty {
+//                    self.selectedCategory = self.categoryOrder.first ?? ""
+//                }
+//            } catch {
+//                print("Fetch/Decode error:", error)
+//            }
+//        }
+//    }
 
     // MARK: - Search Products
-    func searchProducts(with text: String) -> [Product] {
+    func searchProducts(with text: String) -> [ProductFromApi] {
         guard !text.isEmpty else { return [] }
         return products.filter {
             $0.productName.localizedCaseInsensitiveContains(text)
         }
     }
 
-    // MARK: - Fetch Categories
-    func fetchMockCategories() {
-        categories = [
-            CategorySidebar(id: "1", name: "Milk",   image: "milk"),
-            CategorySidebar(id: "2", name: "Dahi",   image: "dahi"),
-            CategorySidebar(id: "3", name: "khowa",  image: "khowa"),
-            CategorySidebar(id: "4", name: "Paneer", image: "paneer"),
-            CategorySidebar(id: "5", name: "Ghee",   image: "ghee")
-        ]
-    }
 }

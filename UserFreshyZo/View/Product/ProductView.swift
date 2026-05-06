@@ -8,7 +8,7 @@ import SwiftUI
 struct ProductView: View {
 
     @Binding var selectedTab: Int
-    let selectedCategoryFromHome: String
+    let selectedCategoryFromHome: String 
 
     @EnvironmentObject private var vm : ProductViewModel
 
@@ -21,6 +21,7 @@ struct ProductView: View {
 
             HStack(spacing: 0) {
                 CategorySidebarView()
+                
                 ProductListView()
                     .frame(maxWidth: .infinity)
             }
@@ -44,7 +45,7 @@ struct ProductView: View {
             default:
                 mapped = selectedCategoryFromHome
             }
-            vm.selectedCategory = mapped
+            vm.selectedCategoryId = mapped
         }
     }
 }

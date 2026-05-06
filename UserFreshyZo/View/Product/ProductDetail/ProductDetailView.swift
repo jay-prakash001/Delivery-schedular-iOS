@@ -7,8 +7,15 @@
 import SwiftUI
 
 struct ProductDetailView: View {
+    @EnvironmentObject var productViewModel : ProductViewModel
+    var id: String
 
-    let product: Product
+    var product: Product? {
+        productViewModel.productData?.productList.first(where: { $0.productId == id })
+    }
+    
+    
+    
     @EnvironmentObject var cartVM: CartViewModel
     @Environment(\.dismiss) var dismiss
 
@@ -92,3 +99,4 @@ struct ProductDetailView: View {
         }
     }
 }
+

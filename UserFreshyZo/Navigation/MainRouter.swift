@@ -18,6 +18,7 @@ final class MainRouter: ObservableObject {
         case maintab
         case milkbanneroffer(banner : Banner)
         case testreports
+        case productdetails(id : String)
     }
 
     func navigate(to screen: MainFlow) {

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ProductStepperView: View {
     
-    let product: Product
+    let product: ProductFromApi
     let quantity: Int
     let isPad: Bool
     
@@ -17,7 +17,7 @@ struct ProductStepperView: View {
     
     var body: some View {
         
-        let price = Double(product.price) ?? 0
+        let price = Double(product.productPrice) ?? 0
         let mrpRaw = Double(product.dairyMrp) ?? 0
         let mrp = mrpRaw > 0 ? mrpRaw : price
         let imageURLString = product.imageURL?.absoluteString ?? ""
@@ -94,3 +94,4 @@ struct ProductStepperView: View {
         }
     }
 }
+

@@ -11,16 +11,16 @@
 import SwiftUI
 
 struct ProductDescriptionCardView: View {
-    let product: Product
+    let product: ProductFromApi
     let isPad: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             SectionHeader(title: "Description")
-            Text(product.description)        // ← was hardcoded string
-                            .font(.system(size: isPad ? 16 : 14))
-                            .foregroundColor(.secondary)
-                            .lineSpacing(4)
+            Text(product.shortDesc)
+                .font(.system(size: isPad ? 16 : 14))
+                .foregroundColor(.secondary)
+                .lineSpacing(4)
                 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -41,3 +41,4 @@ struct ProductDescriptionCardView: View {
         .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
     }
 }
+

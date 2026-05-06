@@ -27,8 +27,11 @@ struct ProductListView: View {
     private let isPad = UIDevice.current.userInterfaceIdiom == .pad
 
     var body: some View {
+        
+        
+        
         ScrollViewReader { proxy in
-            ScrollView {
+            ScrollView(.vertical) {
                 LazyVStack(spacing: 0) {
                     ForEach(vm.categoryOrder, id: \.self) { category in
                         if let products = vm.groupedProducts[category], !products.isEmpty {
@@ -67,9 +70,9 @@ struct ProductListView: View {
                     .max(by: { $0.value < $1.value })
 
                 guard let matched = visible?.key else { return }
-                guard vm.selectedCategory != matched else { return }
+                guard vm.selectedCategoryId != matched else { return }
 
-                vm.selectedCategory = matched
+                vm.selectedCategoryId = matched
             }
 
             // ✅ Receives tap request from sidebar
@@ -86,8 +89,8 @@ struct ProductListView: View {
             }
         }
         .onAppear {
-            vm.fetchProducts()
-            vm.fetchMockCategories()
+//            vm.fetchProducts()
+//            vm.fetchMockCategories()
         }
     }
 }
@@ -95,7 +98,7 @@ struct ProductListView: View {
 // MARK: - Category Section
 struct CategorySectionView: View {
     let category: String
-    let products: [Product]
+    let products: [ProductFromApi]
     let isPad: Bool
 
     var body: some View {
@@ -114,10 +117,18 @@ struct CategorySectionView: View {
                     }
                 )
 
+            
+
             ForEach(products, id: \.id) { product in
+//                
                 ProductCardView(product: product)
                     .padding(.bottom, isPad ? 20 : 16)
             }
+            
+            
+            
+            
         }
     }
 }
+

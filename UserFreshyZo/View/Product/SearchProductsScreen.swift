@@ -22,7 +22,7 @@ struct SearchProductsScreen: View {
         PopularItem(name: "Khowa", image: "khowa")
     ]
     
-    var filteredProducts: [Product] {
+    var filteredProducts: [ProductFromApi] {
         vm.searchProducts(with: searchText)
     }
     
@@ -261,3 +261,4 @@ struct SearchProductsScreen: View {
         UserDefaults.standard.stringArray(forKey: "search_history") ?? []
     }
 }
+

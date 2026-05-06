@@ -7,9 +7,61 @@
 
 import SwiftUI
 
+// MARK: - Helpers on ProductFromApi to match UI needs
+extension ProductFromApi {
+
+    // Previously Product.imageURL
+    var imageURL: URL? {
+        URL(string: dairyProductImage)
+    }
+
+    // Previously Product.quantityText (parsed from name)
+    var quantityText: String {
+        let pattern = #"(\d+\s?(ml|gm|kg|lit))"#
+        if let range = productName.lowercased()
+            .range(of: pattern, options: .regularExpression) {
+            return String(productName[range])
+        }
+        return ""
+    }
+
+    // Previously Product.cleanName (remove quantity suffix from name)
+    var cleanName: String {
+        let pattern = #"\s?\d+\s?(ml|gm|kg|lit).*"#
+        return productName
+            .replacingOccurrences(of: pattern, with: "", options: .regularExpression)
+            .trimmingCharacters(in: .whitespaces)
+    }
+
+    // Convenience to access price/mrp as strings like old Product
+    var price: String { productPrice }
+    var mrp: String { dairyMrp }
+
+    // Previously Product.cleanCategory (simple heuristic)
+    var cleanCategory: String {productSubCategoryId}
+}
+
+
+
+//fiable {
+//    var id: String { productId } // Identifiable conformance
+//    
+//    let productId: String
+//    let productCategoryId: String
+//    let productSubCategoryId: String
+//    let productName: String
+//    let dairyProductImage: String
+//    let shortDesc: String
+//    let nutriVal: String
+//    let unit: String
+//    let productPrice: String
+//    let dairyMrp: String
+//    let subscription: String
+//    let productCategoryName: String
+//    let productSubCategoryName: String
 struct ProductCardView: View {
     
-    let product: Product
+    let product: ProductFromApi
     @EnvironmentObject var cartVM: CartViewModel
     
     @State private var navigateToDetail = false
@@ -24,15 +76,18 @@ struct ProductCardView: View {
         
         ZStack(alignment: .topLeading) {
             
+            
+//            Text("hello \(product.productName)")
+            
             // ── Hidden programmatic NavigationLink ──
-            NavigationLink(
-                destination: ProductDetailView(product: product)
-                    .environmentObject(cartVM),
-                isActive: $navigateToDetail
-            ) {
-                EmptyView()
-            }
-            .hidden()
+//            NavigationLink(
+//                destination: ProductDetailView(product: product)
+//                    .environmentObject(cartVM),
+//                isActive: $navigateToDetail
+//            ) {
+//                EmptyView()
+//            }
+//            .hidden()
             
             // ── Card UI ──
             HStack(spacing: isPad ? 20 : 14) {
@@ -82,13 +137,13 @@ struct ProductCardView: View {
                             Text("₹\(product.price)")
                                 .font(.system(size: isPad ? 18 : 15, weight: .bold))
                             
-                            Text("₹\(product.dairyMrp)")
+                            Text("₹\(product.mrp)")
                                 .font(.system(size: isPad ? 14 : 10))
                                 .foregroundColor(.gray)
                                 .strikethrough()
                             
                             if let price = Double(product.price),
-                               let mrp = Double(product.dairyMrp),
+                               let mrp = Double(product.mrp),
                                mrp > 0 {
                                 let raw = ((mrp - price) / mrp) * 100
                                 if raw.isFinite {
@@ -142,3 +197,4 @@ struct ProductCardView: View {
         }
     }
 }
+

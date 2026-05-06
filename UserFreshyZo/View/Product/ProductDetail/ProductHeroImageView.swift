@@ -11,7 +11,7 @@
 import SwiftUI
 
 struct ProductHeroImageView: View {
-    let product: Product
+    let product: ProductFromApi
     let isPad: Bool
     let currentImageIndex: Int
     let onBack: () -> Void
@@ -50,21 +50,8 @@ struct ProductHeroImageView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 56)
-
-//            VStack {
-//                Spacer()
-//                HStack(spacing: 6) {
-//                    ForEach(0..<3, id: \.self) { i in
-//                        Capsule()
-//                            .fill(i == currentImageIndex
-//                                  ? Color("AppGreenColor")
-//                                  : Color.gray.opacity(0.4))
-//                            .frame(width: i == currentImageIndex ? 20 : 8, height: 8)
-//                    }
-//                }
-//                .padding(.bottom, 12)
-//            }
         }
         .frame(height: isPad ? 500 : 380)
     }
 }
+

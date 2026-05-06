@@ -13,7 +13,7 @@ import SwiftUI
 struct SubscriptionView: View {
     
     // ── Inputs ────────────────────────────────────────────────────────
-    let product: Product
+    let product: ProductFromApi
     
     // ── ViewModel ─────────────────────────────────────────────────────
     @StateObject private var vm = SubscriptionViewModel()
@@ -26,21 +26,18 @@ struct SubscriptionView: View {
     
     // MARK: - Init
     
-    init(product: Product, initialQty: Int = 1) {
+    init(product: ProductFromApi, initialQty: Int = 1) {
         self.product = product
-        // Note: vm.setup() is called in .onAppear so @StateObject is ready
         _vm = StateObject(wrappedValue: {
             let viewModel = SubscriptionViewModel()
             viewModel.setup(
-                basePrice: Int(product.price) ?? 0,
-                mrpPrice:  Int(product.dairyMrp)   ?? 0,
+                basePrice: Int(product.productPrice) ?? 0,
+                mrpPrice:  Int(product.dairyMrp)     ?? 0,
                 initialQty: initialQty
             )
             return viewModel
         }())
     }
-    
-    // MARK: - Body
     
     // MARK: - Body
 
@@ -193,13 +190,13 @@ struct SubscriptionView: View {
                     .font(.system(size: isPad ? 20 : 17, weight: .bold))
                 
                 HStack(spacing: 8) {
-                    Text("₹\(product.price)")
+                    Text("₹\(product.productPrice)")
                         .font(.system(size: isPad ? 18 : 16, weight: .bold))
                     Text("₹\(product.dairyMrp)")
                         .font(.system(size: 13))
                         .foregroundColor(.gray)
                         .strikethrough()
-                    if let price = Double(product.price),
+                    if let price = Double(product.productPrice),
                        let mrp   = Double(product.dairyMrp), mrp > 0 {
                         let pct = Int(((mrp - price) / mrp) * 100)
                         Text("\(pct)% OFF")
@@ -225,7 +222,6 @@ struct SubscriptionView: View {
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
     
-    // MARK: - Subscribe Button
     // MARK: - Subscribe Button
     
     private var subscribeButton: some View {
@@ -272,6 +268,7 @@ struct SubscriptionView: View {
         )
     }
 }
+
 // MARK: - View Modifier Helper
 
 private extension View {
@@ -279,3 +276,4 @@ private extension View {
         self.padding(.horizontal, isPad ? 24 : 16)
     }
 }
+

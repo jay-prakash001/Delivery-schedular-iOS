@@ -32,6 +32,8 @@ struct SplashView: View {
                             switch destination {
                             case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
                             case .testreports : LabReportView()
+                            case . productdetails(let id ) : Text("product id \(id)")
+
                             default : EmptyView()
                             }
                             
@@ -66,6 +68,7 @@ struct SplashView: View {
                                     switch destination {
                                     case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
                                     case .testreports : LabReportView()
+                                    case . productdetails(let id ) : Text("product id \(id)")
                                     default : EmptyView()
                                     }
                                     

@@ -33,3 +33,4 @@ struct ProductStickyBottomView: View {
         }
     }
 }
+

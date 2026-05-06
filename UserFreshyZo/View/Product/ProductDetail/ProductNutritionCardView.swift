@@ -27,3 +27,4 @@ struct ProductNutritionCardView: View {
         .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
     }
 }
+

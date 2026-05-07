@@ -42,6 +42,8 @@ struct ProductListView: View {
                             )
                         }
                     }
+                    
+                    Spacer().frame(height: 100)
                 }
                 .padding(.leading, 4)
                 .padding(.trailing, 12)
@@ -124,7 +126,6 @@ struct CategorySectionView: View {
                 ProductCardView(product: product)
                     .padding(.bottom, isPad ? 20 : 16)
             }
-            
             
             
             

@@ -11,12 +11,13 @@
 import SwiftUI
 
 struct ProductFAQCardView: View {
-    let faqItems: [FAQItem]
+    let faqItems: [ProductFAQ]
     let isPad: Bool
     @Binding var expandedFAQID: UUID?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
+            
             SectionHeader(title: "Frequently Asked Questions")
 
             ForEach(Array(faqItems.enumerated()), id: \.element.id) { index, item in
@@ -25,7 +26,7 @@ struct ProductFAQCardView: View {
                         expandedFAQID = expandedFAQID == item.id ? nil : item.id
                     }) {
                         HStack(alignment: .top) {
-                            Text(item.question)
+                            Text(item.qus)
                                 .font(.system(size: isPad ? 16 : 14, weight: .medium))
                                 .foregroundColor(.primary)
                                 .multilineTextAlignment(.leading)
@@ -41,7 +42,7 @@ struct ProductFAQCardView: View {
                     .buttonStyle(.plain)
 
                     if expandedFAQID == item.id {
-                        Text(item.answer)
+                        Text(item.ans)
                             .font(.system(size: isPad ? 15 : 13))
                             .foregroundColor(.secondary)
                             .lineSpacing(5)

@@ -15,6 +15,7 @@ class ProductViewModel: ObservableObject {
     @Published var groupedProducts: [String: [ProductFromApi]] = [:]
     
     
+    @Published var selectedProductData : ProductDetailData? = nil
     @Published var productData: ProductData? = nil
     
     // ✅ Only set from tap — never from scroll
@@ -82,6 +83,40 @@ class ProductViewModel: ObservableObject {
     }
     
     
+    
+    func fetchProductDetailsById(_ id : String){
+        
+        Task{
+            
+            
+            do{
+                let headers = ["Authorization" :UserDefaults.standard.string(forKey: "auth_token")!]
+                let response : ProductDetailResponse = try await APIService.shared.post(urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/product_details" ,headers : headers, body : ProductDetailsReq(product_id: id)
+                                                                                 
+                )
+                
+                print("product details \(response)")
+                if(response.status){
+                    
+                    selectedProductData = response.data
+                    
+                }else{
+                    selectedProductData = nil
+                }
+                
+                
+                
+                
+                
+                
+            }
+            catch{
+                print("Product details error : \(error)")
+                selectedProductData = nil
+                
+            }
+        }
+    }
     
     //    // MARK: - Fetch Products
     //    func fetchProducts() {

@@ -12,7 +12,7 @@ extension ProductFromApi {
     
     // Previously Product.imageURL
     var imageURL: URL? {
-        URL(string: dairyProductImage)
+        URL(string: dairyProductImage ?? "")
     }
     
     // Previously Product.quantityText (parsed from name)
@@ -90,6 +90,7 @@ struct ProductCardView: View {
     
     let product: ProductFromApi
     @EnvironmentObject var cartVM: CartViewModel
+    @EnvironmentObject var productViewModel : ProductViewModel
     
     @State private var navigateToDetail = false
     @EnvironmentObject var mainRouter : MainRouter
@@ -205,16 +206,20 @@ struct ProductCardView: View {
                 ProductStepperView(product: product, quantity: quantity, isPad: isPad)
                     .environmentObject(cartVM)
                 
-                Button("Subscribe") {
-                    print("Subscribe tapped")
+                if product.subscription == "active" {
+                    
+                    
+                    Button("Subscribe") {
+                        print("Subscribe tapped")
+                    }
+                    .buttonStyle(.plain) // Ensures it doesn't trigger parent gestures
+                    .font(.system(size: isPad ? 16 : 12))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: isPad ? 40 : 30)
+                    .background(Color("AppGreenColor"))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
-                .buttonStyle(.plain) // Ensures it doesn't trigger parent gestures
-                .font(.system(size: isPad ? 16 : 12))
-                .frame(maxWidth: .infinity)
-                .frame(height: isPad ? 40 : 30)
-                .background(Color("AppGreenColor"))
-                .foregroundColor(.white)
-                .cornerRadius(10)
             }
             .padding(.top, 12)
         }
@@ -226,8 +231,11 @@ struct ProductCardView: View {
     // Helper to keep code clean
     private func navigateToProduct() {
         print("Navigating to \(product.id)")
+        productViewModel.fetchProductDetailsById(product.id)
+
         withAnimation {
             mainRouter.navigate(to: .productdetails(id: product.id))
+            
         }
     }
     

@@ -23,7 +23,7 @@ struct CategoryGridView: View {
                 .frame(maxWidth: .infinity, alignment: .center)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 0) { // Set spacing to 0 because Spacers will handle it
-                    Spacer(minLength: 14) // Leading edge gap
+                    Spacer(minLength: 20) // Leading edge gap
                     
                     ForEach(Array(categories.enumerated()), id: \.element.id) { index, category in
                         CategoryCardView(

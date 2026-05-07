@@ -58,11 +58,30 @@ class ProductViewModel: ObservableObject {
     }
     
     func updateSubCategoryByCategoryId(_ value: String) {
-        // Finding the first subcategory that matches the parent category ID
-        if let match = productData?.subCategory.first(where: { $0.productCategoryId == value }) {
-            selectedCategoryId = match.productSubCategoryId
+        // 1. Guard against nil or empty data early
+        guard let subCategories = productData?.subCategory, !subCategories.isEmpty else {
+            print("❌ Error: No subcategories available to search.")
+            return
         }
+
+        print("ID Update Start - Current: \(selectedCategoryId), Input Category: \(value)")
+
+        // 2. Locate the best match or provide a safe default
+        // We use .first(where:) to find the specific category,
+        // falling back to .first (the very first item in the array) if no match is found.
+        let matchedSubCategory = subCategories.first { $0.productCategoryId == value } ?? subCategories.first
+        
+        // 3. Extract the ID (The force unwrap is safe here because of the guard check above)
+        let newId = matchedSubCategory!.productSubCategoryId
+        
+        // 4. Update state variables
+        self.selectedCategoryId = newId
+        self.tapRequestedCategory = newId
+
+        print("ID Update Complete - Result: \(selectedCategoryId)")
     }
+    
+    
     
     //    // MARK: - Fetch Products
     //    func fetchProducts() {

@@ -141,7 +141,7 @@ class HomeViewModel: ObservableObject{
         //        ]
         //
         categories = [
-            ProductCategory(image: "category1", name: "All Products")
+            ProductCategory(id : "",image: "category1", name: "All Products")
             //            Category(id: 2, name: "Milk Products", image: "category2"),
             //            Category(id: 3, name: "Milk", image: "category3"),
         ]

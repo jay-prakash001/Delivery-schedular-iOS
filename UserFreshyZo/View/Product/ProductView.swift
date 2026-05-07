@@ -8,7 +8,6 @@ import SwiftUI
 struct ProductView: View {
 
     @Binding var selectedTab: Int
-    let selectedCategoryFromHome: String 
 
     @EnvironmentObject private var vm : ProductViewModel
 
@@ -36,16 +35,16 @@ struct ProductView: View {
 //            vm.fetchMockCategories()
 //            vm.fetchProducts()
             // Map incoming category from Home to actual category name
-            let mapped: String
-            switch selectedCategoryFromHome {
-            case "Milk Products":
-                mapped = "Dahi"
-            case "All Products", "":
-                mapped = vm.categoryOrder.first ?? "Milk"
-            default:
-                mapped = selectedCategoryFromHome
-            }
-            vm.selectedCategoryId = mapped
+//            let mapped: String
+//            switch selectedCategoryFromHome {
+//            case "Milk Products":
+//                mapped = "Dahi"
+//            case "All Products", "":
+//                mapped = vm.categoryOrder.first ?? "Milk"
+//            default:
+//                mapped = selectedCategoryFromHome
+//            }
+//            vm.selectedCategoryId = mapped
         }
     }
 }
@@ -53,6 +52,6 @@ struct ProductView: View {
 #Preview {
     ProductView(
         selectedTab: .constant(0),
-        selectedCategoryFromHome: "All Products"
+//        selectedCategoryFromHome: "All Products"
     )
 }

@@ -24,7 +24,7 @@ struct MainTabView: View {
                     }
                     .tag(0).environmentObject(mainRouter)
                 
-                ProductView(selectedTab: $selectedTab, selectedCategoryFromHome: selectedCategory)
+                ProductView(selectedTab: $selectedTab)
                     .tabItem {
                         Label("Products", systemImage: "bag")
                     }

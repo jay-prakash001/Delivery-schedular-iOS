@@ -76,13 +76,14 @@ struct CalendarItem: Codable, Identifiable {
 
 // MARK: - Product Category
 struct ProductCategory: Codable, Identifiable {
-    var id: String { name }
+    var id: String
     let image: String
     let name: String
 
     enum CodingKeys: String, CodingKey {
         case image = "category_image"
         case name = "product_category_name"
+        case id = "product_category_id"
     }
 }
 

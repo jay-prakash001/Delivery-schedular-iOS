@@ -27,25 +27,16 @@ struct ProductInfoCardView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("FRESHYZO · FRESH DAILY")
                 .font(.system(size: isPad ? 14 : 11, weight: .semibold))
-                .foregroundColor(Color("AppGreenColor"))
-                .tracking(1.2)
+                .foregroundColor(Color(.white)).padding(4).background(.secondGreen)
+                .tracking(1.2).cornerRadius(6)
 
             Text(displayTitle)
                 .font(.system(size: isPad ? 28 : 22, weight: .bold))
 
-            Text(product.shortDesc)
-                .font(.system(size: isPad ? 16 : 14))
-                .foregroundColor(.gray)
             
-            if !unitText.isEmpty {
-                Text(unitText)
-                    .font(.system(size: isPad ? 15 : 13, weight: .semibold))
-                    .foregroundColor(Color("AppGreenColor"))
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 6)
-                    .background(Color("AppGreenColor").opacity(0.12))
-                    .cornerRadius(20)
-            }
+            Text("\(product.unit)")
+                .font(.system(size: isPad ? 16 : 13))
+                .foregroundColor(.gray)
 
             HStack(alignment: .center, spacing: 10) {
                 Text("₹\(product.productPrice)")

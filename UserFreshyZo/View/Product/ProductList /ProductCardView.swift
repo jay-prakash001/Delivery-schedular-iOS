@@ -211,6 +211,10 @@ struct ProductCardView: View {
                     
                     Button("Subscribe") {
                         print("Subscribe tapped")
+                        
+                        
+                        
+                        mainRouter.navigate(to: .subscriptionstart(product: product,quantity : quantity))
                     }
                     .buttonStyle(.plain) // Ensures it doesn't trigger parent gestures
                     .font(.system(size: isPad ? 16 : 12))
@@ -230,7 +234,7 @@ struct ProductCardView: View {
 
     // Helper to keep code clean
     private func navigateToProduct() {
-        print("Navigating to \(product.id)")
+//        print("Navigating to \(product.id)")
         productViewModel.fetchProductDetailsById(product.id)
 
         withAnimation {

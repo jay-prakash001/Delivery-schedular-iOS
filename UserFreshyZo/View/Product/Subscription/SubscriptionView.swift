@@ -8,13 +8,20 @@
 // All business logic has been moved to SubscriptionViewModel.
 // This file contains ONLY layout and UI binding.
 
+
+// on subscribe button click this screen will appear
+
 import SwiftUI
 
 struct SubscriptionView: View {
     
-    // ── Inputs ────────────────────────────────────────────────────────
-    let product: ProductFromApi
+    // Store the concrete product passed in
+    var product: ProductFromApi
     
+    // If not used, you can remove this EnvironmentObject.
+    // Keeping it here in case other UI parts later need it.
+    @EnvironmentObject var productViewModel: ProductViewModel
+    @EnvironmentObject var cartVM : CartViewModel
     // ── ViewModel ─────────────────────────────────────────────────────
     @StateObject private var vm = SubscriptionViewModel()
     
@@ -22,22 +29,61 @@ struct SubscriptionView: View {
     @State private var showDatePicker = false
     @Environment(\.dismiss) private var dismiss
     
+    let quantity = 2
     private let isPad = UIDevice.current.userInterfaceIdiom == .pad
     
+
+    init(product: ProductFromApi, quantity: Int = 2) {
+            // Assign properties first
+            self.product = product
+//            self.quantity = quantity
+            
+            // Parse prices safely (handles strings like "104.00")
+            let base = Int(Double(product.productPrice ?? "0") ?? 0)
+            let mrp = Int(Double(product.dairyMrp ?? "0") ?? 0)
+            
+            // 3. Initialize StateObject using the local 'quantity' parameter
+            // DO NOT use self.quantity here; use the 'quantity' from the init arguments
+            self._vm = StateObject(wrappedValue: {
+                let viewModel = SubscriptionViewModel()
+                viewModel.setup(
+                    basePrice: base,
+                    mrpPrice: mrp,
+                    initialQty: quantity // <--- Uses the passed value directly
+                )
+                return viewModel
+            }())
+            
+            print("Initializing subscription for \(product.productName ?? "") with qty: \(quantity)")
+        }
+
     // MARK: - Init
-    
-    init(product: ProductFromApi, initialQty: Int = 1) {
-        self.product = product
-        _vm = StateObject(wrappedValue: {
-            let viewModel = SubscriptionViewModel()
-            viewModel.setup(
-                basePrice: Int(product.productPrice) ?? 0,
-                mrpPrice:  Int(product.dairyMrp)     ?? 0,
-                initialQty: initialQty
-            )
-            return viewModel
-        }())
-    }
+//    init(product: ProductFromApi, initialQty: Int = 1) {
+//        // 1. Assign the product property first
+//        self.product = product
+//        
+//        // 2. Define the local quantity logic.
+//        // We use a local variable so we don't have to call 'self'
+//        let defaultQty = 2
+//        let finalQty = initialQty > 1 ? initialQty : defaultQty
+//        
+//        // 3. Parse prices safely (handling decimals)
+//        let base = Int(Double(product.productPrice ?? "0") ?? 0)
+//        let mrp = Int(Double(product.dairyMrp ?? "0") ?? 0)
+//
+//        // 4. Initialize the StateObject
+//        _vm = StateObject(wrappedValue: {
+//            let viewModel = SubscriptionViewModel()
+//            viewModel.setup(
+//                basePrice: base,
+//                mrpPrice: mrp,
+//                initialQty: finalQty // Using the local variable 'finalQty'
+//            )
+//            return viewModel
+//        }())
+//        
+//        print("product qty \(product.quantityText ?? "")")
+//    }
     
     // MARK: - Body
 
@@ -143,8 +189,23 @@ struct SubscriptionView: View {
                     SimpleQuantityCard(
                         qty: vm.state.simpleQty,
                         summaryLine: vm.state.summaryLine,
-                        onIncrease: { vm.increaseSimpleQty() },
-                        onDecrease: { vm.decreaseSimpleQty() }
+                        onIncrease: {
+                            
+                            vm.increaseSimpleQty()
+                            cartVM.addItem(
+                                id: product.id,
+                                name: product.cleanName,
+                                price: Double(product.productPrice) ?? 0.0,
+                                mrp: Double(product.dairyMrp) ?? 0.0,
+                                image: product.dairyProductImage ?? "",
+                                variant: String(vm.state.simpleQty + 1)
+                            )
+                            
+                        },
+                        onDecrease: { vm.decreaseSimpleQty()
+                            cartVM.removeItem(id : product.id)
+                            
+                        }
                     )
                     .horizontalPadding(isPad: isPad)
                     .padding(.top, 14)

@@ -14,7 +14,7 @@ struct SplashView: View {
     @StateObject var mainRouter = MainRouter()
     @StateObject var cartViewModel = CartViewModel()
     @StateObject private var vm = HomeViewModel()
-    @State private var productViewModel : ProductViewModel = ProductViewModel()
+    @StateObject private var productViewModel : ProductViewModel = ProductViewModel()
 
     @State private var isActive = false
     @State private var scale: CGFloat = 0.5
@@ -34,7 +34,7 @@ struct SplashView: View {
                             case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
                             case .testreports : LabReportView()
                             case . productdetails(let id ) : ProductDetailView(id : id)
-
+                            case . subscriptionstart( let product, let quantity) : SubscriptionView( product : product, quantity : quantity)
                             default : EmptyView()
                             }
                             
@@ -71,6 +71,8 @@ struct SplashView: View {
                                     case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
                                     case .testreports : LabReportView()
                                     case . productdetails(let id ) : ProductDetailView(id : id)
+                                    case . subscriptionstart(let product, let quantity) : SubscriptionView(product : product, quantity : quantity)
+
                                     default : EmptyView()
                                     }
                                     

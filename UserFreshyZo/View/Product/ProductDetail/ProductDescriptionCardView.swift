@@ -11,22 +11,24 @@
 import SwiftUI
 
 struct ProductDescriptionCardView: View {
-    let product: ProductFromApi
+    let productDesc : String
+    let tags : [String]
     let isPad: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             SectionHeader(title: "Description")
-            Text(product.shortDesc)
+            Text(productDesc)
                 .font(.system(size: isPad ? 16 : 14))
                 .foregroundColor(.secondary)
                 .lineSpacing(4)
-                
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(["🌿 Organic", "🐄 Gir Breed", "🧪 Lab Tested", "♻️ Glass Bottle"],
+                    ForEach(tags,
                             id: \.self) { tag in
-                        Text(tag)
+                        
+                        
+                        Text(getEmojiTag(tag))
                             .font(.system(size: isPad ? 14 : 12, weight: .medium))
                             .padding(.horizontal, 12).padding(.vertical, 6)
                             .background(Color("AppGreenColor").opacity(0.1))
@@ -42,3 +44,30 @@ struct ProductDescriptionCardView: View {
     }
 }
 
+
+func getEmojiTag(_ tag: String) -> String {
+    let lowerTag = tag.lowercased()
+    
+    // Using a switch or if-else chain to mimic your logic
+    if lowerTag.contains("lab") {
+        return "🧪 \(tag)"
+    } else if lowerTag.contains("organic") {
+        return "🌿 \(tag)"
+    } else if lowerTag.contains("gir") {
+        return "🐄 \(tag)"
+    } else if lowerTag.contains("glass") {
+        return "♻️ \(tag)"
+    } else if lowerTag.contains("fat") {
+        return "🥛 \(tag)"
+    } else if lowerTag.contains("water") {
+        return "💧 \(tag)"
+    } else if lowerTag.contains("chemical") || lowerTag.contains("preservative") {
+        return "🚫 \(tag)"
+    } else if lowerTag.contains("nutritious") {
+        return "✨ \(tag)"
+    } else if lowerTag.contains("powder") {
+        return "❌ \(tag)"
+    } else {
+        return tag // Return original if no match
+    }
+}

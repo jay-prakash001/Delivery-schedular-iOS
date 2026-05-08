@@ -45,6 +45,14 @@ class CartViewModel: ObservableObject {
         }
     }
 
+    
+    func getQuantityByProductId(_ id : String) ->  Int {
+        guard let product = items.first(where: { $0.id == id }) else { return 2 }
+        
+        let quantity = product.quantity
+        return quantity
+
+    }
     func removeItem(id: String) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
 

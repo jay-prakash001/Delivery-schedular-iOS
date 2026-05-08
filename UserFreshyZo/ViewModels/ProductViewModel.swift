@@ -65,7 +65,7 @@ class ProductViewModel: ObservableObject {
             return
         }
 
-        print("ID Update Start - Current: \(selectedCategoryId), Input Category: \(value)")
+//        print("ID Update Start - Current: \(selectedCategoryId), Input Category: \(value)")
 
         // 2. Locate the best match or provide a safe default
         // We use .first(where:) to find the specific category,
@@ -98,8 +98,9 @@ class ProductViewModel: ObservableObject {
                 print("product details \(response)")
                 if(response.status){
                     
-                    selectedProductData = response.data
-                    
+                    DispatchQueue.main.async {
+                        self.selectedProductData = response.data
+                    }
                 }else{
                     selectedProductData = nil
                 }

@@ -8,7 +8,7 @@ struct ProductDetailResponse: Codable {
 }
 
 // MARK: - Data Container
-struct ProductDetailData: Codable {
+struct ProductDetailData: Codable, Equatable {
     let productDetails: [ProductFromApi]
     let productAssets: [ProductAsset] // Updated from [String] to [ProductAsset]
     let productFaq: [ProductFAQ]
@@ -23,7 +23,7 @@ struct ProductDetailData: Codable {
 }
 
 // MARK: - Product Asset
-struct ProductAsset: Codable, Identifiable {
+struct ProductAsset: Codable, Identifiable, Equatable {
     // Unique ID for SwiftUI ForEach loops
     var id: String { asset }
     let asset: String
@@ -68,13 +68,18 @@ struct ProductDetail: Codable, Identifiable {
 }
 
 // MARK: - FAQ & Reviews (Same as before)
-struct ProductFAQ: Codable {
+struct ProductFAQ: Codable, Equatable {
     let id = UUID()
     let qus: String
     let ans: String
+    
+    // Content-based equality to avoid UUID differences counting as changes
+    static func == (lhs: ProductFAQ, rhs: ProductFAQ) -> Bool {
+        lhs.qus == rhs.qus && lhs.ans == rhs.ans
+    }
 }
 
-struct ReviewContainer: Codable {
+struct ReviewContainer: Codable, Equatable {
     let writeReview: Bool
     let feedbacks: [Feedback]
 
@@ -84,7 +89,7 @@ struct ReviewContainer: Codable {
     }
 }
 
-struct Feedback: Codable, Identifiable {
+struct Feedback: Codable, Identifiable, Equatable {
     var id: String { feedbackId }
     let feedbackId, customerId, productId, productSubCategoryId: String
     let productRating, serviceRating, feedback, timeStamp: String

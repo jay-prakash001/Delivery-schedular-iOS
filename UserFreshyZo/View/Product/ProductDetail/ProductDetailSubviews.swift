@@ -91,13 +91,19 @@ struct LegendItem: View {
 // MARK: - Review Card
 struct ReviewCard: View {
     let isPad: Bool
+    
+    let feedback : Feedback
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
+                
                 Circle().fill(Color.gray.opacity(0.2)).frame(width: 36, height: 36)
-                    .overlay(Text("R").font(.system(size: 16, weight: .semibold)).foregroundColor(.gray))
+                    .overlay(
+                        Text(String(feedback.customerName.first ?? "@"))
+                        
+                        .font(.system(size: 16, weight: .semibold)).foregroundColor(.gray))
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Ravi S.").font(.system(size: isPad ? 14 : 13, weight: .semibold))
+                    Text(feedback.customerName.capitalized).font(.system(size: isPad ? 14 : 13, weight: .semibold))
                     HStack(spacing: 3) {
                         Image(systemName: "checkmark.seal.fill")
                             .foregroundColor(Color("AppGreenColor")).font(.system(size: 10))
@@ -105,18 +111,18 @@ struct ReviewCard: View {
                     }
                 }
                 Spacer()
-                Text("★ 5.0")
+                Text("★ \(feedback.productRating)")
                     .font(.system(size: isPad ? 13 : 11, weight: .bold)).foregroundColor(.white)
                     .padding(.horizontal, 10).padding(.vertical, 5)
                     .background(Color("AppGreenColor")).cornerRadius(20)
             }
-            Text("Best milk I've ever had! Tastes so fresh and creamy. My kids love it. Will subscribe monthly!")
+            Text(feedback.feedback)
                 .font(.system(size: isPad ? 14 : 12)).foregroundColor(.secondary).lineSpacing(3)
-            Text("Feb 14, 2026").font(.system(size: isPad ? 12 : 10)).foregroundColor(.gray)
-            HStack(spacing: 4) {
-                Text("Helpful?").font(.system(size: isPad ? 12 : 10)).foregroundColor(.gray)
-                Text("👍 12").font(.system(size: isPad ? 12 : 10)).foregroundColor(.gray)
-            }
+            Text(feedback.timeStamp).font(.system(size: isPad ? 12 : 10)).foregroundColor(.gray)
+//            HStack(spacing: 4) {
+//                Text("Helpful?").font(.system(size: isPad ? 12 : 10)).foregroundColor(.gray)
+//                Text("👍 12").font(.system(size: isPad ? 12 : 10)).foregroundColor(.gray)
+//            }
         }
         .padding(12)
         .frame(width: isPad ? 300 : 230)
@@ -153,7 +159,7 @@ struct WhyChooseRow: View {
 struct SubscriptionStepperView: View {
     @Binding var qty: Int
     let isPad: Bool
-
+    
     var body: some View {
         HStack(spacing: 8) {
             Button(action: { if qty > 2 { qty -= 1 } }) {
@@ -163,12 +169,12 @@ struct SubscriptionStepperView: View {
                     .frame(width: isPad ? 32 : 28, height: isPad ? 32 : 28)
             }
             .disabled(qty <= 2)
-
+            
             Text("\(qty)")
                 .font(.system(size: isPad ? 16 : 15, weight: .bold))
                 .frame(minWidth: isPad ? 24 : 20)
                 .multilineTextAlignment(.center)
-
+            
             Button(action: { qty += 1 }) {
                 Text("+")
                     .font(.system(size: isPad ? 18 : 16, weight: .semibold))

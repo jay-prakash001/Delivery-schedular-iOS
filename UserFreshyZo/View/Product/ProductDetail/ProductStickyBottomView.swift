@@ -27,7 +27,7 @@ struct ProductStickyBottomView: View {
                     .background(Color("AppGreenColor"))
                     .cornerRadius(14)
                     .padding(.horizontal, isPad ? 24 : 16)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, 4)
             }
             .background(.white)
         }

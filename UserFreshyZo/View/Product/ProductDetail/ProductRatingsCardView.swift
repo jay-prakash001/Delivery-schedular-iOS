@@ -12,7 +12,7 @@ import SwiftUI
 
 struct ProductRatingsCardView: View {
     let isPad: Bool
-
+    let feedBacks : [Feedback]
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
@@ -37,34 +37,34 @@ struct ProductRatingsCardView: View {
                         .font(.system(size: isPad ? 13 : 11)).foregroundColor(.gray)
                 }
 
-                VStack(spacing: 6) {
-                    ForEach((1...5).reversed(), id: \.self) { star in
-                        HStack(spacing: 8) {
-                            Text("\(star)")
-                                .font(.system(size: isPad ? 13 : 11))
-                                .foregroundColor(.gray).frame(width: 12)
-                            Image(systemName: "star.fill")
-                                .foregroundColor(.orange)
-                                .font(.system(size: isPad ? 11 : 9))
-                            GeometryReader { geo in
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 4).fill(Color.gray.opacity(0.15))
-                                    RoundedRectangle(cornerRadius: 4).fill(Color("AppGreenColor"))
-                                        .frame(width: geo.size.width * 0.85)
-                                }
-                            }
-                            .frame(height: 8)
-                            Text("85%")
-                                .font(.system(size: isPad ? 12 : 10))
-                                .foregroundColor(.gray).frame(width: 32)
-                        }
-                    }
-                }
+//                VStack(spacing: 6) {
+//                    ForEach((1...5).reversed(), id: \.self) { star in
+//                        HStack(spacing: 8) {
+//                            Text("\(star)")
+//                                .font(.system(size: isPad ? 13 : 11))
+//                                .foregroundColor(.gray).frame(width: 12)
+//                            Image(systemName: "star.fill")
+//                                .foregroundColor(.orange)
+//                                .font(.system(size: isPad ? 11 : 9))
+//                            GeometryReader { geo in
+//                                ZStack(alignment: .leading) {
+//                                    RoundedRectangle(cornerRadius: 4).fill(Color.gray.opacity(0.15))
+//                                    RoundedRectangle(cornerRadius: 4).fill(Color("AppGreenColor"))
+//                                        .frame(width: geo.size.width * 0.85)
+//                                }
+//                            }
+//                            .frame(height: 8)
+//                            Text("85%")
+//                                .font(.system(size: isPad ? 12 : 10))
+//                                .foregroundColor(.gray).frame(width: 32)
+//                        }
+//                    }
+//                }
             }
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(0..<3) { _ in ReviewCard(isPad: isPad) }
+                    ForEach(feedBacks, id: \.self.feedbackId) { fb in ReviewCard( isPad: isPad, feedback :fb ) }
                 }
             }
         }

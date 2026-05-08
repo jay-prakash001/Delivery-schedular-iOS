@@ -46,7 +46,7 @@ struct ProductHeroImageView: View {
                                     ProgressView()
                                 }
                             }.onAppear{
-                                print("media urls \(productMediaUrls)")
+//                                print("media urls \(productMediaUrls)")
                             }
                         }
                     }

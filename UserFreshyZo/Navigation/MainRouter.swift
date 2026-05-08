@@ -19,6 +19,7 @@ final class MainRouter: ObservableObject {
         case milkbanneroffer(banner : Banner)
         case testreports
         case productdetails(id : String)
+        case subscriptionstart( product : ProductFromApi, quantity : Int )
     }
 
     func navigate(to screen: MainFlow) {

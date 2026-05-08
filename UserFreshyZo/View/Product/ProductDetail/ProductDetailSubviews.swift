@@ -99,7 +99,7 @@ struct ReviewCard: View {
                 
                 Circle().fill(Color.gray.opacity(0.2)).frame(width: 36, height: 36)
                     .overlay(
-                        Text(String(feedback.customerName.first ?? "@"))
+                        Text(String(feedback.customerName.first ?? "@").capitalized)
                         
                         .font(.system(size: 16, weight: .semibold)).foregroundColor(.gray))
                 VStack(alignment: .leading, spacing: 2) {

@@ -203,6 +203,8 @@ struct ProductCardView: View {
 
             // 3. INTERACTIVE BUTTONS AREA (Separate from the tap gesture)
             HStack(spacing: 10) {
+                
+                    Spacer()
                 ProductStepperView(product: product, quantity: quantity, isPad: isPad)
                     .environmentObject(cartVM)
                 

@@ -35,7 +35,8 @@ struct ProductStepperView: View {
                 )
             }
             .font(.system(size: isPad ? 16 : 12))
-            .frame(maxWidth: .infinity)
+//            .frame(maxWidth: .infinity)
+            .frame(width: isPad ? 140 : 100)
             .foregroundColor(Color("AppGreenColor"))
             .frame(height: isPad ? 40 : 30)
             .overlay(
@@ -81,7 +82,7 @@ struct ProductStepperView: View {
                 
                 Spacer()
             }
-            .frame(maxWidth: .infinity)
+            .frame(width: isPad ? 140 : 100)
             .frame(height: isPad ? 40 : 30)
             .background(
                 RoundedRectangle(cornerRadius: 10)

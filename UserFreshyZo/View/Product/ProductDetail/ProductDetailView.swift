@@ -22,81 +22,49 @@ struct ProductDetailView: View {
 //        productViewModel.productData?.productList.first(where: { $0.productId == id })
 //    }
 //
-    
-    
     var displayProduct: ProductFromApi? {
+        // 1. Identify our two sources
         let detailed = productViewModel.selectedProductData?.productDetails.first(where: { $0.productId == id })
         let listItem = productViewModel.productData?.productList.first(where: { $0.productId == id })
         
+        // 2. Set 'detailed' as the priority. If it's nil, fall back to 'listItem'.
         guard var product = detailed ?? listItem else { return nil }
 
-        // 1. ASSET FALLBACK: Check for Nil, Empty Array, or Array with Empty Strings
-        let assets = product.productAssets ?? []
-        
-        // If the list is empty OR the first asset has an empty string ""
-        if assets.isEmpty || (assets.first?.asset.trimmingCharacters(in: .whitespaces).isEmpty ?? true) {
-            
-            // Find the best available image URL
-            let fallbackUrl = product.dairyProductImage ?? listItem?.dairyProductImage ?? ""
-            
-            // Only assign if the fallback URL itself isn't empty
-            if !fallbackUrl.isEmpty {
+        // --- 1. ASSETS FALLBACK ---
+        // Check if the current product has valid assets
+        let currentAssets = product.productAssets ?? []
+        let isAssetsEmpty = currentAssets.isEmpty || (currentAssets.first?.asset.trimmingCharacters(in: .whitespaces).isEmpty ?? true)
+
+        if isAssetsEmpty {
+            // Priority 1: Check if the global view model has a general asset list
+            if let globalAssets = productViewModel.selectedProductData?.productAssets, !globalAssets.isEmpty {
+                product.productAssets = globalAssets
+            }
+            // Priority 2: Check if listItem has a specific image URL
+            else if let fallbackUrl = listItem?.dairyProductImage, !fallbackUrl.isEmpty {
                 product.productAssets = [ProductAsset(asset: fallbackUrl)]
+            }
+            // Priority 3: Check if current product (even if detailed) has a single image
+            else if let selfUrl = product.dairyProductImage, !selfUrl.isEmpty {
+                product.productAssets = [ProductAsset(asset: selfUrl)]
             }
         }
 
-        // 2. FAQ Fallback
+        // --- 2. FAQ FALLBACK ---
         if product.productFaq == nil || (product.productFaq?.isEmpty ?? true) {
+            // Try to get FAQs from the view model container
             product.productFaq = productViewModel.selectedProductData?.productFaq
         }
 
-        // 3. Description Fallback
+        // --- 3. DESCRIPTION FALLBACK ---
         if product.description == nil || (product.description?.isEmpty ?? true) {
+            // Use the short description from the list item as a backup
             product.description = listItem?.shortDesc
         }
 
         return product
     }
-//
-//    var displayProduct: ProductFromApi? {
-//        // 1. Get the detailed product object (from the Detail API)
-//        let detailed = productViewModel.selectedProductData?.productDetails.first(where: { $0.productId == id })
-//        
-//        // 2. Get the list product object (from the Waterfall/Home API)
-//        let listItem = productViewModel.productData?.productList.first(where: { $0.productId == id })
-//        
-//        // 3. Start with the best available base object
-//        if var fullData = detailed ?? listItem {
-//            
-//            // --- FAQ FALLBACK ---
-//            if fullData.productFaq == nil || (fullData.productFaq?.isEmpty ?? true) {
-//                fullData.productFaq = productViewModel.selectedProductData?.productFaq
-//            }
-//            
-//            // --- ASSET FALLBACK (The specific fix you requested) ---
-//            // We check if the current assets are nil OR empty
-//            if fullData.productAssets == nil || (fullData.productAssets?.isEmpty ?? true) {
-//                
-//                // Try to get assets from the root of the detail response first
-//                if let rootAssets = productViewModel.selectedProductData?.productAssets, !rootAssets.isEmpty {
-//                    fullData.productAssets = rootAssets
-//                }
-//                // FINAL FALLBACK: Create a new ProductAsset object using dairyProductImage
-//                else if let fallbackUrl = fullData.dairyProductImage ?? listItem?.dairyProductImage {
-//                    fullData.productAssets = [ProductAsset(asset: fallbackUrl)]
-//                }
-//            }
-//            
-//            // --- DESCRIPTION FALLBACK ---
-//            if fullData.description == nil || (fullData.description?.isEmpty ?? true) {
-//                fullData.description = listItem?.shortDesc
-//            }
-//            
-//            return fullData
-//        }
-//        
-//        return nil
-//    }
+
 
 
     @State private var expandedFAQID: UUID? = nil
@@ -124,23 +92,19 @@ struct ProductDetailView: View {
                         GeometryReader { geo in
                             let minY = geo.frame(in: .global).minY
                             
-//                            Color.clear
-//                                .onChange(of: minY) {
-//                                    let threshold = -(heroHeight - 100)
-//                                    withAnimation(.easeInOut(duration: 0.2)) {
-//                                        showSolidNavbar = minY < threshold
-//                                    }
-//                                }
+
                             if let product = displayProduct {
-                                ProductHeroImageView(
-                                    productMediaUrls: (productViewModel.selectedProductData?.productAssets.isEmpty == false)
-                                    ? productViewModel.selectedProductData!.productAssets
-                                    : [ProductAsset(asset: product.dairyProductImage ?? "00")],
-                                    isPad: false,
-                                    currentImageIndex: 0,
-                                    onBack: { dismiss() },
-                                    onShare: { }
-                                )
+                                let mediaUrls = (product.productAssets?.isEmpty == false)
+                                                    ? product.productAssets!
+                                                    : [ProductAsset(asset: "00")]
+
+                                    ProductHeroImageView(
+                                        productMediaUrls: mediaUrls,
+                                        isPad: false,
+                                        currentImageIndex: 0,
+                                        onBack: { dismiss() },
+                                        onShare: { }
+                                    )
                                 
                                 
                                 

@@ -58,32 +58,7 @@ struct SubscriptionView: View {
         }
 
     // MARK: - Init
-//    init(product: ProductFromApi, initialQty: Int = 1) {
-//        // 1. Assign the product property first
-//        self.product = product
-//        
-//        // 2. Define the local quantity logic.
-//        // We use a local variable so we don't have to call 'self'
-//        let defaultQty = 2
-//        let finalQty = initialQty > 1 ? initialQty : defaultQty
-//        
-//        // 3. Parse prices safely (handling decimals)
-//        let base = Int(Double(product.productPrice ?? "0") ?? 0)
-//        let mrp = Int(Double(product.dairyMrp ?? "0") ?? 0)
-//
-//        // 4. Initialize the StateObject
-//        _vm = StateObject(wrappedValue: {
-//            let viewModel = SubscriptionViewModel()
-//            viewModel.setup(
-//                basePrice: base,
-//                mrpPrice: mrp,
-//                initialQty: finalQty // Using the local variable 'finalQty'
-//            )
-//            return viewModel
-//        }())
-//        
-//        print("product qty \(product.quantityText ?? "")")
-//    }
+
     
     // MARK: - Body
 

@@ -14,104 +14,28 @@ struct ProductRatingsCardView: View {
     let isPad: Bool
     let feedBacks : [Feedback]
     let canWriteFeedBack : Bool
-    @State private var rating: Int = 0
+    @State private var rating: Int = 5
     @State private var feedbackText: String = ""
     @State var showReviewSection = false
+    
+    @EnvironmentObject var mainRouter : MainRouter
+    @EnvironmentObject var productViewModel : ProductViewModel
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 SectionHeader(title: "Ratings")
                 Spacer()
-                Button("See all →") {}
-                    .font(.system(size: isPad ? 15 : 13, weight: .medium))
-                    .foregroundColor(Color("AppGreenColor"))
+                Button("See all →") {
+                    
+                    mainRouter.navigate(to: .allreview)
+                    
+                    
+                }
+                .font(.system(size: isPad ? 15 : 13, weight: .medium))
+                .foregroundColor(Color("AppGreenColor"))
             }
             
-//            HStack(alignment: .center ,spacing: 20) {
-//                // 1. Store the rating in a local variable for clarity
-//                let rating = avgRating(feedback: feedBacks)
-//                
-//                VStack(spacing: 4) {
-//                    // The Numeric Rating
-//                    Text(String(format: "%.1f", rating))
-//                        .font(.system(size: isPad ? 48 : 38, weight: .bold))
-//                    
-//                    // The Dynamic Stars
-//                    HStack(spacing: 2) {
-//                        ForEach(0..<5) { i in
-//                            let index = Double(i)
-//                            
-//                            // LOGIC:
-//                            // If rating is 4.5:
-//                            // i=0,1,2,3 -> star.fill
-//                            // i=4 -> star.leadinghalf.filled
-//                            // If i was 5 -> star
-//                            
-//                            Image(systemName: {
-//                                if rating >= index + 1 {
-//                                    return "star.fill"
-//                                } else if rating >= index + 0.5 {
-//                                    return "star.leadinghalf.filled"
-//                                } else {
-//                                    return "star"
-//                                }
-//                            }())
-//                            .foregroundColor(.orange)
-//                            .font(.system(size: isPad ? 14 : 11))
-//                        }
-//                    }
-//                }
-//                
-//                
-//                VStack(alignment:.trailing){
-//                    Spacer()
-//                    // add a review button
-//                    Button(action: {
-//                        withAnimation(.spring()) {
-//                            showReviewSection.toggle()
-//                        }
-//                    }) {
-//                        Text("Review")
-//                            .font(.subheadline) // Smaller font
-//                            .fontWeight(.semibold)
-//                            .foregroundColor(.white)
-//                            // Smaller, specific padding
-//                            .padding(.vertical, 8)
-//                            .padding(.horizontal, 24)
-//                            .background(
-//                                LinearGradient(gradient: Gradient(colors: [.lightAppGreen, .secondGreen.opacity(0.8)]),
-//                                               startPoint: .topLeading,
-//                                               endPoint: .bottomTrailing)
-//                            )
-//                            .clipShape(Capsule()) // Capsule looks cleaner for small buttons
-//                            .shadow(color: .blue.opacity(0.2), radius: 4, x: 0, y: 2)
-//                    }
-//                    // Removed .padding(.horizontal) to let the button sit naturally
-//                }.frame(maxWidth: .infinity)
-//                //                VStack(spacing: 6) {
-//                //                    ForEach((1...5).reversed(), id: \.self) { star in
-//                //                        HStack(spacing: 8) {
-//                //                            Text("\(star)")
-//                //                                .font(.system(size: isPad ? 13 : 11))
-//                //                                .foregroundColor(.gray).frame(width: 12)
-//                //                            Image(systemName: "star.fill")
-//                //                                .foregroundColor(.orange)
-//                //                                .font(.system(size: isPad ? 11 : 9))
-//                //                            GeometryReader { geo in
-//                //                                ZStack(alignment: .leading) {
-//                //                                    RoundedRectangle(cornerRadius: 4).fill(Color.gray.opacity(0.15))
-//                //                                    RoundedRectangle(cornerRadius: 4).fill(Color("AppGreenColor"))
-//                //                                        .frame(width: geo.size.width * 0.85)
-//                //                                }
-//                //                            }
-//                //                            .frame(height: 8)
-//                //                            Text("85%")
-//                //                                .font(.system(size: isPad ? 12 : 10))
-//                //                                .foregroundColor(.gray).frame(width: 32)
-//                //                        }
-//                //                    }
-//                //                }
-//            }
             
             
             
@@ -142,7 +66,7 @@ struct ProductRatingsCardView: View {
                         showReviewSection.toggle()
                     }
                 }) {
-                    Text("Review")
+                    Text("Write Review")
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
@@ -160,13 +84,25 @@ struct ProductRatingsCardView: View {
             if showReviewSection{
                 // Inside your body:
                 VStack {
-                    if !canWriteFeedBack {
+                    if canWriteFeedBack {
                         ReviewInputView(
                             rating: $rating,
                             feedbackText: $feedbackText,
                             onSubmit: {
                                 print("Review submitted: \(rating) stars, \(feedbackText)")
-                                showReviewSection = false // Close after submission
+                                productViewModel.submitProductReview(rating: rating, feedbackText: feedbackText)
+                                
+                                withAnimation{
+                                    showReviewSection = false // Close after submission
+                                    feedbackText = ""
+                                    rating = 5
+                                }
+                            },onClose: {
+                                withAnimation{
+                                    showReviewSection = false // Close after submission
+                                    feedbackText = ""
+                                    rating = 5
+                                }
                             }
                         )
                         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -185,9 +121,9 @@ struct ProductRatingsCardView: View {
             }
         }
         
-            .padding(16)
-            .background(RoundedRectangle(cornerRadius: 18).fill(Color.white))
-            .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
+        .padding(16)
+        .background(RoundedRectangle(cornerRadius: 18).fill(Color.white))
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 3)
         
         
     }
@@ -200,11 +136,26 @@ struct ReviewInputView: View {
     @Binding var rating: Int
     @Binding var feedbackText: String
     var onSubmit: () -> Void
+    var onClose: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("How was your experience?")
-                .font(.headline)
+            HStack {
+                Text("Rate this product")
+                    .font(.headline)
+                
+                Spacer() // Pushes the close button to the right
+                
+                Button(action: {
+                    onClose()
+                }) {
+                    Image(systemName: "xmark.circle.fill") // Or just "xmark"
+                        .font(.title2)
+                        .foregroundColor(.gray.opacity(0.6))
+                        .padding(4)
+                }
+            }
+            .padding(.bottom, 5) // Optional: space between header and stars
             
             // Star Rating Row
             HStack {
@@ -220,7 +171,7 @@ struct ReviewInputView: View {
             
             // Feedback Text Area
             VStack(alignment: .leading) {
-                Text("Share more details (optional)")
+                Text("Share more details")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
@@ -255,10 +206,10 @@ struct ReviewInputView: View {
                         }
                     )
                     .cornerRadius(10)
-                    // Add a subtle shadow only when active
+                // Add a subtle shadow only when active
                     .shadow(color: rating == 0 ? .clear : .lightAppGreen.opacity(0.3), radius: 5, x: 0, y: 3)
             }
-            .disabled(rating == 0)
+            .disabled(rating == 0 || feedbackText.isEmpty)
             .padding(.horizontal, 40)
             .animation(.spring(response: 0.4, dampingFraction: 0.6), value: rating)// Smooth color transition when rating changes // Prevent submission without a rating
         }
@@ -285,9 +236,9 @@ struct NoAccessView: View {
             }
             
             VStack(spacing: 8) {
-                Text("Review Unavailable")
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                //                Text("Review Unavailable")
+                //                    .font(.headline)
+                //                    .foregroundColor(.primary)
                 
                 Text("Only customers who have purchased this item can share their experience.")
                     .font(.subheadline)
@@ -296,7 +247,7 @@ struct NoAccessView: View {
                     .padding(.horizontal, 40)
             }
             
-        
+            
         }
         .padding(.vertical, 30)
         .frame(maxWidth: .infinity)

@@ -18,6 +18,8 @@ class ProductViewModel: ObservableObject {
     @Published var selectedProductData : ProductDetailData? = nil
     @Published var productData: ProductData? = nil
     
+    
+    @Published var ratingResponse : GeneralApiResponse? = nil
     // ✅ Only set from tap — never from scroll
     @Published var tapRequestedCategory: String? = nil
     
@@ -30,7 +32,7 @@ class ProductViewModel: ObservableObject {
     func getProductList(){
         Task{
             do{
-                let headers = ["Authorization" :UserDefaults.standard.string(forKey: "auth_token")!]
+                let headers = ["Authorization" : UserDefaults.standard.string(forKey: "auth_token")]
                 let response : ProductResponse = try await APIService.shared.get(urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/product_list" ,headers : headers
                                                                                  
                 )
@@ -119,6 +121,52 @@ class ProductViewModel: ObservableObject {
         }
     }
     
+    
+    
+    
+    func submitProductReview(rating : Int, feedbackText : String){
+        
+        Task{
+            
+            guard let product = selectedProductData?.productDetails else {return}
+            guard let productItem = product.count > 0 ? product[0] : nil else {return}
+            do{
+                let headers = ["Authorization" :UserDefaults.standard.string(forKey: "auth_token")!]
+                let response : GeneralApiResponse = try await APIService.shared.post(urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/submit_feedback" ,headers : headers, body : RateProductReq(product_id: productItem.productId, product_sub_category_id: productItem.productSubCategoryId, product_rating: rating, feedback: feedbackText)
+                                                                                 
+                )
+                
+                print("product rating response \(response)")
+//                if(response.status){
+//                    
+//                    
+////                    DispatchQueue.main.async {
+////                        self.selectedProductData = response.data
+                        self.ratingResponse = response
+                    
+                    
+                    try? await Task.sleep(for: .seconds(4))
+                    ratingResponse = nil
+//
+//                        
+////                                            }
+//                }else{
+//                    ratingResponse = nil
+//                }
+                
+                
+                
+                
+                
+                
+            }
+            catch{
+                print("Product details error : \(error)")
+                selectedProductData = nil
+                
+            }
+        }
+    }
     //    // MARK: - Fetch Products
     //    func fetchProducts() {
     //        guard let url = URL(string: "https://freshyzo.com/admin/Customer_App_Api/fetch_product") else { return }

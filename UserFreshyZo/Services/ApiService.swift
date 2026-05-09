@@ -19,7 +19,7 @@ final class APIService {
     private func performRequest<T: Decodable, U: Encodable>(
         urlString: String,
         method: HTTPMethod,
-        headers: [String: String] = [:],
+        headers: [String: String?] = [:],
         body: U? = nil
     ) async throws -> T {
         
@@ -60,7 +60,7 @@ final class APIService {
 extension APIService {
     func get<T: Decodable>(
         urlString: String,
-        headers: [String: String] = [:]
+        headers: [String: String?] = [:]
     ) async throws -> T {
         return try await performRequest(
             urlString: urlString,
@@ -74,7 +74,7 @@ extension APIService {
 extension APIService {
     func post<T: Decodable, U: Encodable>(
         urlString: String,
-        headers: [String: String] = [:],
+        headers: [String: String?] = [:],
         body: U
     ) async throws -> T {
         return try await performRequest(
@@ -90,7 +90,7 @@ extension APIService {
 extension APIService {
     func put<T: Decodable, U: Encodable>(
         urlString: String,
-        headers: [String: String] = [:],
+        headers: [String: String?] = [:],
         body: U
     ) async throws -> T {
         return try await performRequest(
@@ -105,7 +105,7 @@ extension APIService {
 extension APIService {
     func patch<T: Decodable, U: Encodable>(
         urlString: String,
-        headers: [String: String] = [:],
+        headers: [String: String?] = [:],
         body: U
     ) async throws -> T {
         return try await performRequest(
@@ -120,7 +120,7 @@ extension APIService {
 extension APIService {
     func delete<T: Decodable>(
         urlString: String,
-        headers: [String: String] = [:]
+        headers: [String: String?] = [:]
     ) async throws -> T {
         return try await performRequest(
             urlString: urlString,

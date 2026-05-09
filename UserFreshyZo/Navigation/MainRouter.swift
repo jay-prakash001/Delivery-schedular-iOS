@@ -20,6 +20,8 @@ final class MainRouter: ObservableObject {
         case testreports
         case productdetails(id : String)
         case subscriptionstart( product : ProductFromApi, quantity : Int )
+        case allreview
+        case referandearn
     }
 
     func navigate(to screen: MainFlow) {

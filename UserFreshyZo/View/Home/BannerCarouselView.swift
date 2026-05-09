@@ -57,7 +57,14 @@ struct BannerCarouselView: View {
         }
         .onTapGesture {
             // Navigate from the page itself to avoid TabView gesture conflicts
-            mainRouter.navigate(to: .milkbanneroffer(banner: banners[currentIndex]))
+            
+            if banners[currentIndex].name == "referral" {
+                mainRouter.navigate(to: .referandearn)
+
+            }else{
+                mainRouter.navigate(to: .milkbanneroffer(banner: banners[currentIndex]))
+
+            }
         }
     }
 }

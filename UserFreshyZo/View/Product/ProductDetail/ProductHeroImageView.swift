@@ -56,7 +56,7 @@ struct ProductHeroImageView: View {
             .tabViewStyle(.page(indexDisplayMode: .always))
             .background(Color.black.opacity(0.05))
         
-//            HStack {
+            HStack {
 //                Button(action: onBack) {
 //                    Image(systemName: "arrow.left")
 //                        .font(.system(size: 16, weight: .semibold))
@@ -66,19 +66,19 @@ struct ProductHeroImageView: View {
 //                        .clipShape(Circle())
 //                        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
 //                }
-//                Spacer()
-//                Button(action: onShare) {
-//                    Image(systemName: "square.and.arrow.up")
-//                        .font(.system(size: 16, weight: .semibold))
-//                        .foregroundColor(.black)
-//                        .frame(width: 40, height: 40)
-//                        .background(.white)
-//                        .clipShape(Circle())
-//                        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
-//                }
-//            }
-//            .padding(.horizontal, 16)
-//            .padding(.top, 56)
+                Spacer()
+                Button(action: onShare) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                        .frame(width: 40, height: 40)
+                        .background(.white)
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 56)
         }
         .frame(height: isPad ? 500 : 400)
     }

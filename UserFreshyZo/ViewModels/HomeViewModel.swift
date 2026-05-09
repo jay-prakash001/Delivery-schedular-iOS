@@ -16,6 +16,7 @@ class HomeViewModel: ObservableObject{
     @Published var calendar : [CalendarData] = []
     
     @Published var homeRes : HomeRes? = nil
+    @Published var trialRes : TrialResponse? = nil
     
     @Published var toastString: String?  = nil
     
@@ -31,7 +32,7 @@ class HomeViewModel: ObservableObject{
     init(){
         loadMockData()
         
-        getHomeData()
+//        getHomeData()
     }
     
     
@@ -71,11 +72,30 @@ class HomeViewModel: ObservableObject{
                     
                 }
             }catch{
-                
+                homeRes = nil
             }
         }
     }
     
+    func getTrialDetails(){
+        Task{
+            do{
+                let headers = ["Authorization" : UserDefaults.standard.string(forKey: "auth_token") ?? ""]
+                var response : TrialResponse = try await  APIService.shared.get(
+                    urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/trial_details", headers: headers)
+                
+                
+                
+                trialRes = response
+                
+            }catch{
+                try await Task.sleep(nanoseconds: 200_000_000)
+                trialRes = nil
+                
+            }
+            
+        }
+    }
     func addSugestion(_ text: String){
         Task{
             do{

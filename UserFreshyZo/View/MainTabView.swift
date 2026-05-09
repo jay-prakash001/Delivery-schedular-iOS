@@ -5,6 +5,7 @@ struct MainTabView: View {
     @State private var showCart = false
     @EnvironmentObject var cartVM: CartViewModel
     @EnvironmentObject private var productViewModel : ProductViewModel
+    @EnvironmentObject private var homeViewModel : HomeViewModel
     @State private var selectedCategory = "All Products"
     @EnvironmentObject var mainRouter: MainRouter
 
@@ -58,7 +59,15 @@ struct MainTabView: View {
                     .padding(.bottom, 65)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-        }// This ensures that when we are in the MainTab,
+        }.onAppear{
+            
+            if homeViewModel.homeRes == nil {
+                homeViewModel.getHomeData()
+
+            }
+        }
+        
+        // This ensures that when we are in the MainTab,
         // the back button from Splash/Login doesn't appear.
         .navigationBarHidden(true)
         .animation(.spring(), value: shouldShowCart)

@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import LinkPresentation
+
 
 // MARK: - ShareSheet
 struct ShareSheet: UIViewControllerRepresentable {
@@ -15,6 +17,127 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
+
+func shareProductContent(text: String, link: String, imageUrl: String) {
+    print("📢 Share initiated for product: \(text)")
+    
+    // 1. Validate URLs
+    guard let productUrl = URL(string: link) else {
+        print("❌ Error: Invalid product link URL: \(link)")
+        return
+    }
+    guard let imageDownloadUrl = URL(string: imageUrl) else {
+        print("❌ Error: Invalid image download URL: \(imageUrl)")
+        return
+    }
+
+    print("⏳ Downloading image from: \(imageUrl)...")
+    
+    // 2. Download Data
+    URLSession.shared.dataTask(with: imageDownloadUrl) { data, response, error in
+        // Check for networking errors
+        if let error = error {
+            print("❌ Network Error during image download: \(error.localizedDescription)")
+            return
+        }
+        
+        // Check HTTP Status
+        if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+            print("❌ Server Error: Received status code \(httpResponse.statusCode)")
+            return
+        }
+
+        // 3. Convert data to UIImage
+        guard let data = data, let imageToShare = UIImage(data: data) else {
+            print("⚠️ Warning: Could not convert data to UIImage. Proceeding with text only.")
+            presentShareController(text: text, url: productUrl, image: nil)
+            return
+        }
+        
+        print("✅ Image downloaded successfully (\(data.count) bytes)")
+        
+        DispatchQueue.main.async {
+            presentShareController(text: text, url: productUrl, image: imageToShare)
+        }
+    }.resume()
+}
+
+// Separate function for presentation to keep logs clean
+private func presentShareController(text: String, url: URL, image: UIImage?) {
+    print("🚀 Preparing UIActivityViewController...")
+    
+    let metadataSource = ProductShareMetadataSource(text: text, url: url, image: image)
+    var items: [Any] = [metadataSource]
+    
+    if let img = image {
+        items.append(img)
+    }
+    
+    let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
+    
+    // Log dismissal/completion
+    activityVC.completionWithItemsHandler = { activity, success, items, error in
+        if success {
+            print("🎉 User successfully shared via: \(activity?.rawValue ?? "unknown app")")
+        } else if let error = error {
+            print("❌ Share Sheet Error: \(error.localizedDescription)")
+        } else {
+            print("⏹️ User dismissed the share sheet without sharing.")
+        }
+    }
+    
+    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+       let rootVC = windowScene.windows.first?.rootViewController {
+        
+        if let popover = activityVC.popoverPresentationController {
+            print("📱 Configuring iPad popover...")
+            popover.sourceView = rootVC.view
+            popover.sourceRect = CGRect(x: rootVC.view.bounds.midX, y: rootVC.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        rootVC.present(activityVC, animated: true) {
+            print("📺 Share Sheet presented on screen.")
+        }
+    } else {
+        print("❌ Error: Could not find rootViewController to present the share sheet.")
+    }
+}
+
+// MARK: - Metadata Helper
+class ProductShareMetadataSource: NSObject, UIActivityItemSource {
+    let text: String
+    let url: URL
+    let image: UIImage?
+
+    init(text: String, url: URL, image: UIImage?) {
+        self.text = text
+        self.url = url
+        self.image = image
+    }
+
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        return text
+    }
+
+    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        // Return the text and link for messaging apps
+        return "\(text)\n\(url.absoluteString)"
+    }
+
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let metadata = LPLinkMetadata()
+        metadata.title = text
+        metadata.originalURL = url
+        metadata.url = url
+        if let img = image {
+            metadata.iconProvider = NSItemProvider(object: img)
+            metadata.imageProvider = NSItemProvider(object: img)
+        }
+        return metadata
+    }
+}
+
 
 // MARK: - Section Header
 struct SectionHeader: View {
@@ -130,6 +253,85 @@ struct ReviewCard: View {
     }
 }
 
+
+
+struct ReviewCardListItem: View {
+    let isPad: Bool
+    let feedback: Feedback
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // MARK: - Header (Avatar, Name, Rating)
+            HStack(alignment: .center, spacing: 12) {
+                // Better Avatar
+                ZStack {
+                    Circle()
+                        .fill(LinearGradient(colors: [Color.gray.opacity(0.1), Color.gray.opacity(0.2)], startPoint: .top, endPoint: .bottom))
+                        .frame(width: 40, height: 40)
+                    
+                    Text(String(feedback.customerName.first ?? "@").uppercased())
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.gray)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(feedback.customerName.capitalized)
+                        .font(.system(size: isPad ? 16 : 14, weight: .bold))
+                        .foregroundColor(.primary)
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundColor(Color("AppGreenColor"))
+                            .symbolRenderingMode(.multicolor)
+                            .font(.system(size: 12))
+                        
+                        Text("Verified Buyer")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(Color("AppGreenColor"))
+                    }
+                }
+                
+                Spacer()
+                
+                // Modern Rating Badge
+                HStack(spacing: 2) {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 10))
+                    Text("\(feedback.productRating)")
+                        .font(.system(size: isPad ? 14 : 12, weight: .bold))
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .foregroundColor(.white)
+                .background(Color("AppGreenColor"))
+                .clipShape(Capsule())
+            }
+            
+            // MARK: - Review Text
+            Text(feedback.feedback)
+                .font(.system(size: isPad ? 15 : 13))
+                .foregroundColor(.primary.opacity(0.8))
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true) // Prevents text truncation issues
+            
+            // MARK: - Footer (Timestamp)
+            HStack {
+                Spacer() // Pushes timestamp to the right
+                Text(feedback.timeStamp)
+                    .font(.system(size: isPad ? 12 : 11))
+                    .foregroundColor(.secondary.opacity(0.7))
+                    .italic()
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(UIColor.secondarySystemGroupedBackground))
+                .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
+        )
+        .padding(.horizontal, 4) // Subtle breathing room in the list
+    }
+}
 // MARK: - Why Choose Row
 struct WhyChooseRow: View {
     let emoji: String; let title: String; let subtitle: String; let badge: String?

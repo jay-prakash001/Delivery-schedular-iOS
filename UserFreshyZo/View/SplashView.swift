@@ -35,6 +35,9 @@ struct SplashView: View {
                             case .testreports : LabReportView()
                             case . productdetails(let id ) : ProductDetailView(id : id)
                             case . subscriptionstart( let product, let quantity) : SubscriptionView( product : product, quantity : quantity)
+                            case .allreview : AllReviewView()
+                            case .referandearn : Text("Refer and earn")
+
                             default : EmptyView()
                             }
                             
@@ -72,6 +75,9 @@ struct SplashView: View {
                                     case .testreports : LabReportView()
                                     case . productdetails(let id ) : ProductDetailView(id : id)
                                     case . subscriptionstart(let product, let quantity) : SubscriptionView(product : product, quantity : quantity)
+
+                                    case .allreview : AllReviewView()
+                                    case .referandearn : Text("Refer and earn")
 
                                     default : EmptyView()
                                     }
@@ -119,8 +125,8 @@ struct SplashView: View {
             .onAppear {
                 
                 withAnimation(.bouncy(duration: 1)) {
-                    scale = 1.2
-                    opacity = 1.2
+                    scale = 1.5
+                    opacity = 1.5
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {

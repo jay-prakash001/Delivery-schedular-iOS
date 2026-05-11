@@ -18,6 +18,7 @@ final class MainRouter: ObservableObject {
         case maintab
         case milkbanneroffer(banner : Banner)
         case testreports
+        case article(article : HomeBlogs)
         case productdetails(id : String)
         case subscriptionstart( product : ProductFromApi, quantity : Int )
         case allreview

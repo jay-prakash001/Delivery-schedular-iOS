@@ -44,6 +44,7 @@ class HomeViewModel: ObservableObject{
                     headers: headers
                 )
                 
+                print("home data response")
                 if response.status {
                     // 1. Create temporary arrays to avoid multiple UI refreshes
                     var tempBanners: [Banner] = []

@@ -11,7 +11,7 @@ struct ArticleCard: View {
     
 
     let article: HomeBlogs
-    
+    @EnvironmentObject var mainRouter : MainRouter
     var body: some View {
         
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
@@ -47,9 +47,14 @@ struct ArticleCard: View {
 
                 Spacer()
 
-                Text("Learn More")
-                    .foregroundColor(Color("AppGreenColor"))
-                    .font(isPad ? .body : .caption)
+                Button{
+                    mainRouter.navigate(to: .article(article: article))
+                } label:{
+                    Text("Learn More")
+                        .foregroundColor(Color("AppGreenColor"))
+                        .font(isPad ? .body : .caption)
+                }
+                
             }
             .padding(8) // 👈 content padding
         }
@@ -57,6 +62,10 @@ struct ArticleCard: View {
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous)) // 👈 main card
         .shadow(color: .black.opacity(0.08), radius: 5, y: 3).padding(.bottom,4)
+        .onTapGesture{
+            mainRouter.navigate(to: .article(article: article))
+
+        }
     }
 }
 //#Preview {

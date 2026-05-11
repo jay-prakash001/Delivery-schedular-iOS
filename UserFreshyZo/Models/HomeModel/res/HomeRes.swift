@@ -110,7 +110,7 @@ struct HomeSuggestion: Codable {
 
 
 // MARK: - Home Blogs
-struct HomeBlogs: Codable, Identifiable {
+struct HomeBlogs: Codable, Identifiable, Hashable {
     // We create a unique ID based on title and image since the API
     // doesn't provide a specific ID field here.
     var id: String { title + imageUrl }

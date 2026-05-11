@@ -34,6 +34,7 @@ struct SplashView: View {
                             switch destination {
                             case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
                             case .testreports : LabReportView()
+                            case .article (let article) : ArticleView(article: article)
                             case . productdetails(let id ) : ProductDetailView(id : id)
                             case . subscriptionstart( let product, let quantity) : SubscriptionView( product : product, quantity : quantity)
                             case .allreview : AllReviewView()
@@ -75,6 +76,8 @@ struct SplashView: View {
                                     switch destination {
                                     case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
                                     case .testreports : LabReportView()
+                                    case .article (let article) : ArticleView(article: article)
+
                                     case . productdetails(let id ) : ProductDetailView(id : id)
                                     case . subscriptionstart(let product, let quantity) : SubscriptionView(product : product, quantity : quantity)
 

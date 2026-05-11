@@ -67,11 +67,15 @@ struct MilkTrialView: View {
                         // 1. Close the dialog first by resetting state
                         checkOutViewModel.resetState()
                         
-                        // 2. Delay the navigation and refresh slightly to let the
-                        // dialog dismiss animation finish and the UI hierarchy stabilize.
+                        // 2. Wait for the dialog to clear
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            // 3. Update the data (usually don't animate this to avoid lag)
                             homeViewModel.getHomeData()
-                            mainRouter.navigateBack()
+                            
+                            // 4. Animate the navigation back
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                mainRouter.navigateBack()
+                            }
                         }
                     }
                 )
@@ -89,18 +93,9 @@ struct MilkTrialView: View {
                     secondaryButtonText: "Cancel", onPrimaryAction: {
                         
                         
-//                      checkOutViewModel.resetState()
+                      checkOutViewModel.resetState()
                         
-                        // 2. Wait for the dialog to clear
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            // 3. Update the data (usually don't animate this to avoid lag)
-                            homeViewModel.getHomeData()
-                            
-                            // 4. Animate the navigation back
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                mainRouter.navigateBack()
-                            }
-                        }
+                     
                         
                         
 //                        checkOutViewModel.resetState()

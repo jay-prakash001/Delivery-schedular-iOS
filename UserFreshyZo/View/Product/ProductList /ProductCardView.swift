@@ -12,7 +12,10 @@ extension ProductFromApi {
     
     // Previously Product.imageURL
     var imageURL: URL? {
-        URL(string: dairyProductImage ?? "")
+        let encoded = dairyProductImage.addingPercentEncoding(
+            withAllowedCharacters: .urlQueryAllowed
+        )
+        return URL(string: encoded ?? "")
     }
     
     // Previously Product.quantityText (parsed from name)
@@ -106,6 +109,7 @@ struct ProductCardView: View {
             HStack(spacing: isPad ? 20 : 14) {
                 
                 // 1. IMAGE AREA
+                
                 AsyncImage(url: product.imageURL) { phase in
                 switch phase {
                 case .empty:

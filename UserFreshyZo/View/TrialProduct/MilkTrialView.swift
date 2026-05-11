@@ -12,6 +12,8 @@ struct MilkTrialView: View {
     @State private var tempPickerDate: Date = Date() // Temporary state for the sheet
     
     @EnvironmentObject var homeViewModel: HomeViewModel
+    @EnvironmentObject var checkOutViewModel: CheckOutViewModel
+    @EnvironmentObject var mainRouter : MainRouter
     
     var products: [TrialProductDetail] {
         homeViewModel.trialRes?.data.trialProductDetails ?? []
@@ -45,29 +47,96 @@ struct MilkTrialView: View {
                 }
                 .padding(.horizontal, 16)
             }
+            
+            if checkOutViewModel.isLoading {
+                ProgressView("Finalizing Payment...")
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+            }
+            
+            // 2. Success Dialog
+            if case .success(let message) = checkOutViewModel.state {
+                LottieDialog(
+                    isPresented: .constant(true),
+                    lottieFileName: "empty_cart", // Your Success Lottie JSON
+                    title: "Payment Successful!",
+                    message: message,
+                    primaryButtonText: "Go to Dashboard",
+                    onPrimaryAction: {
+                        // 1. Close the dialog first by resetting state
+                        checkOutViewModel.resetState()
+                        
+                        // 2. Delay the navigation and refresh slightly to let the
+                        // dialog dismiss animation finish and the UI hierarchy stabilize.
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            homeViewModel.getHomeData()
+                            mainRouter.navigateBack()
+                        }
+                    }
+                )
+                .transition(.scale.combined(with: .opacity))
+            }
+            
+            // 3. Error Dialog
+            if case .error(let message) = checkOutViewModel.state {
+                LottieDialog(
+                    isPresented: .constant(true),
+                    lottieFileName: "empty_cart", // Your Error Lottie JSON
+                    title: "Payment Failed",
+                    message: message,
+                    primaryButtonText: "Try Again",
+                    secondaryButtonText: "Cancel", onPrimaryAction: {
+                        
+                        
+//                      checkOutViewModel.resetState()
+                        
+                        // 2. Wait for the dialog to clear
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            // 3. Update the data (usually don't animate this to avoid lag)
+                            homeViewModel.getHomeData()
+                            
+                            // 4. Animate the navigation back
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                mainRouter.navigateBack()
+                            }
+                        }
+                        
+                        
+//                        checkOutViewModel.resetState()
+                        // Optionally re-trigger checkout
+                    },
+                    onSecondaryAction: {
+                        checkOutViewModel.resetState()
+                    }
+                )
+                .transition(.scale.combined(with: .opacity))
+            }
         }
         .navigationTitle("Milk Trial")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
             StartTrialButton { handleStartTrial() }
         }
-        .onAppear { homeViewModel.getTrialDetails() }
+        .onAppear {
+            homeViewModel.getTrialDetails() }
         .onChange(of: products) { newList in
             //            if selectedProduct == nil, let first = newList.first {
             //                selectedProduct = first
             //            }
         }
+        
         // --- NATIVE BOTTOM SHEET DIALOG ---
         .sheet(isPresented: $showDatePicker) {
             VStack(spacing: 20) {
                 // Just a header with no 'Done' button needed
-//                HStack {
-//                    Text("Select delivery Start Date")
-//                        .font(.headline)
-//                    Spacer()
-//                }
-//                .padding(20)
-//
+                //                HStack {
+                //                    Text("Select delivery Start Date")
+                //                        .font(.headline)
+                //                    Spacer()
+                //                }
+                //                .padding(20)
+                //
                 DatePicker(
                     "",
                     selection: $tempPickerDate,
@@ -96,7 +165,12 @@ struct MilkTrialView: View {
     
     private func handleStartTrial() {
         guard let date = selectedDate, let product = selectedProduct else { return }
-        print("Starting trial for \(product.productName) on \(date)")
+        if let sProduct = selectedProduct {
+            
+            checkOutViewModel.initiateCheckout(amount: sProduct.amount, couponCode: sProduct.couponCode, productId: sProduct.productId, startsOn: date.toYMDString(), trialDays: sProduct.days)
+            print("Starting trial for \(product.id) on \(date.toYMDString())")
+        }
+        
     }
 }
 
@@ -297,12 +371,7 @@ struct PriceTotalView: View {
             
             Divider()
             
-            //            PriceRow(label: "Total Payable",  value: "₹\(Int(product.payable))", isBold: true)
             
-//            Text("Charges are deducted post-delivery. Please ensure sufficient wallet balance.")
-//                .font(.caption)
-//                .foregroundColor(.orange)
-//                .padding(.top, 4)
             
             
             HStack{
@@ -326,7 +395,7 @@ struct PriceTotalView: View {
         .background(Color.white)
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
-//        .padding(.horizontal)
+        //        .padding(.horizontal)
     }
 }
 //
@@ -385,5 +454,15 @@ extension Color {
             r = 0; g = 0; b = 0
         }
         self.init(red: r, green: g, blue: b)
+    }
+}
+
+
+
+extension Date {
+    func toYMDString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: self)
     }
 }

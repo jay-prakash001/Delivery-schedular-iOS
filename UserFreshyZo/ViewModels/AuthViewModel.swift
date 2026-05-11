@@ -220,9 +220,8 @@ class AuthViewModel: ObservableObject {
                     
                     UserDefaults.standard.set(isNewCustomer,forKey: "isNewCustomer")
                     
-                    if( isNewCustomer){
-                        UserDefaults.standard.set(phone, forKey: "userPhone")
-                    }
+                    UserDefaults.standard.set(phone, forKey: "userPhone")
+
                         isLoggedIn = true
                     
                     print("islogged in \(isLoggedIn)   newCustomer \(isNewCustomer)")

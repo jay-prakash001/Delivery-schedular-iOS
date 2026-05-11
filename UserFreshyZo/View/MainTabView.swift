@@ -6,6 +6,7 @@ struct MainTabView: View {
     @EnvironmentObject var cartVM: CartViewModel
     @EnvironmentObject private var productViewModel : ProductViewModel
     @EnvironmentObject private var homeViewModel : HomeViewModel
+
     @State private var selectedCategory = "All Products"
     @EnvironmentObject var mainRouter: MainRouter
 

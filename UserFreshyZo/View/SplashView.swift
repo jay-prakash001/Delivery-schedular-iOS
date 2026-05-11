@@ -15,6 +15,7 @@ struct SplashView: View {
     @StateObject var cartViewModel = CartViewModel()
     @StateObject private var vm = HomeViewModel()
     @StateObject private var productViewModel : ProductViewModel = ProductViewModel()
+    @StateObject private var checkOutViewModel : CheckOutViewModel = CheckOutViewModel()
 
     @State private var isActive = false
     @State private var scale: CGFloat = 0.5
@@ -47,6 +48,7 @@ struct SplashView: View {
                 .environmentObject(vm)
                 .environmentObject(mainRouter)
                 .environmentObject(cartViewModel)
+                .environmentObject(checkOutViewModel)
                 .environmentObject(productViewModel)
             }else{
                 if(authViewModel.isLoggedIn){
@@ -88,6 +90,7 @@ struct SplashView: View {
                         .environmentObject(mainRouter)
                         .environmentObject(vm)
                         .environmentObject(cartViewModel)
+                        .environmentObject(checkOutViewModel)
                         .environmentObject(productViewModel)
 
                         

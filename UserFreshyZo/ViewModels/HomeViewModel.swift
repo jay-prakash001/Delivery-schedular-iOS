@@ -35,47 +35,95 @@ class HomeViewModel: ObservableObject{
 //        getHomeData()
     }
     
-    
-    
-    func getHomeData(){
-        
-        Task{
-            do{
-                let headers = ["Authorization" : UserDefaults.standard.string(forKey: "auth_token") ?? ""]
-                var response : HomeRes = try await  APIService.shared.get(
-                    urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/home", headers: headers)
+    func getHomeData() {
+        Task {
+            do {
+                let headers = ["Authorization": UserDefaults.standard.string(forKey: "auth_token") ?? ""]
+                let response: HomeRes = try await APIService.shared.get(
+                    urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/home",
+                    headers: headers
+                )
                 
-                
-                
-                homeRes = response
-                if response.status{
+                if response.status {
+                    // 1. Create temporary arrays to avoid multiple UI refreshes
+                    var tempBanners: [Banner] = []
+                    var tempCategories: [ProductCategory] = [ProductCategory(id: "", image: "category1", name: "All Products")]
+                    
+                    // 2. Map banners
                     response.data.banner.forEach { body in
                         let intId = Int(body.offerBannerId) ?? 0
-                        banners.append(
+                        tempBanners.append(
                             Banner(
                                 id: intId,
                                 name: body.title,
                                 image: body.imgName,
-                                price: 0, // No price in API; set a sensible default
+                                price: 0,
                                 trialProducts: HomeViewModel.defaultTrialProducts
                             )
                         )
                     }
-                    calendar = response.data.calendarData
                     
-                    response.data.productCategory.forEach{body in
-                        
-                        categories.append(body)
-                        
+                    // 3. Map categories
+                    tempCategories.append(contentsOf: response.data.productCategory)
+                    
+                    // 4. Update @Published properties ONCE on the MainActor
+                    await MainActor.run {
+                        self.homeRes = response
+                        self.banners = tempBanners // UI updates once here
+                        self.calendar = response.data.calendarData
+                        self.categories = tempCategories // UI updates once here
                     }
-                    
-                    
                 }
-            }catch{
-                homeRes = nil
+            } catch {
+                await MainActor.run {
+                    self.homeRes = nil
+                }
             }
         }
     }
+    
+//    
+//    func getHomeData(){
+//        
+//        Task{
+//            do{
+//                let headers = ["Authorization" : UserDefaults.standard.string(forKey: "auth_token") ?? ""]
+//                var response : HomeRes = try await  APIService.shared.get(
+//                    urlString: "https://www.freshyzo.com/admin/Customer_App_Api_V1/home", headers: headers)
+//                
+//                
+//                
+//                homeRes = response
+//                if response.status{
+//                    banners = []
+//                    response.data.banner.forEach { body in
+//                        let intId = Int(body.offerBannerId) ?? 0
+//                        banners.append(
+//                            Banner(
+//                                id: intId,
+//                                name: body.title,
+//                                image: body.imgName,
+//                                price: 0, // No price in API; set a sensible default
+//                                trialProducts: HomeViewModel.defaultTrialProducts
+//                            )
+//                        )
+//                    }
+//                    calendar = response.data.calendarData
+//                    categories = [ProductCategory(id : "",image: "category1", name: "All Products")]
+//                    response.data.productCategory.forEach{body in
+//                        
+//                        
+//                        categories.append(body)
+//                        
+//                    }
+//                    
+//                    
+//                }
+//            }catch{
+//                homeRes = nil
+//            }
+//        }
+//    }
     
     func getTrialDetails(){
         Task{
@@ -160,18 +208,18 @@ class HomeViewModel: ObservableObject{
         //            )
         //        ]
         //
-        categories = [
-            ProductCategory(id : "",image: "category1", name: "All Products")
-            //            Category(id: 2, name: "Milk Products", image: "category2"),
-            //            Category(id: 3, name: "Milk", image: "category3"),
-        ]
+//        categories = [
+//            ProductCategory(id : "",image: "category1", name: "All Products")
+//            //            Category(id: 2, name: "Milk Products", image: "category2"),
+//            //            Category(id: 3, name: "Milk", image: "category3"),
+//        ]
         
         
-        offers = [
-            Offer(id: 1, title: "Milk and Ghee", subtitle: "buy ghee and paneer", price: 1000, image: "milk_ghee"),
-            Offer(id: 2, title: "Paneer and Dahi", subtitle: "buy ghee and paneer", price: 500, image: "paneer_dahi"),
-            Offer(id: 3, title: "Milk and Khowa", subtitle: "buy milk and khowa", price: 1000, image: "milk_khowa")
-        ]
+//        offers = [
+//            Offer(id: 1, title: "Milk and Ghee", subtitle: "buy ghee and paneer", price: 1000, image: "milk_ghee"),
+//            Offer(id: 2, title: "Paneer and Dahi", subtitle: "buy ghee and paneer", price: 500, image: "paneer_dahi"),
+//            Offer(id: 3, title: "Milk and Khowa", subtitle: "buy milk and khowa", price: 1000, image: "milk_khowa")
+//        ]
         
         //        articles = [
         //            Artical(

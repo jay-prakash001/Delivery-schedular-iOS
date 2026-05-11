@@ -21,28 +21,33 @@ struct BannerCarouselView: View {
         let bannerHeight: CGFloat = isPad ? 300 : 160
         
         TabView(selection: $currentIndex) {
-            ForEach(Array(banners.enumerated()), id: \.offset) { index, banner in
-                AsyncImage(url: URL(string: banner.image)) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(maxWidth: .infinity)
-                            .frame(height: bannerHeight)
-                            .clipped()
-                    case .empty, .failure:
-                        Color.gray.opacity(0.2)
-                            .frame(height: bannerHeight)
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: isPad ? 18 : 12))
-                .contentShape(Rectangle()) // make entire tile tappable
+            if !banners.isEmpty{
                 
-                .buttonStyle(PlainButtonStyle())
-                .tag(index)
+            
+                ForEach(Array(banners.enumerated()), id: \.offset) { index, banner in
+                    AsyncImage(url: URL(string: banner.image)) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: bannerHeight)
+                                .clipped()
+                        case .empty, .failure:
+                            Color.gray.opacity(0.2)
+                                .frame(height: bannerHeight)
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: isPad ? 18 : 12))
+                    .contentShape(Rectangle()) // make entire tile tappable
+                    
+                    .buttonStyle(PlainButtonStyle())
+                    .tag(index)
+                }
+
             }
         }
         .frame(height: bannerHeight)
@@ -57,7 +62,7 @@ struct BannerCarouselView: View {
         }
         .onTapGesture {
             // Navigate from the page itself to avoid TabView gesture conflicts
-            
+//            
             if banners[currentIndex].name == "referral" {
                 mainRouter.navigate(to: .referandearn)
 

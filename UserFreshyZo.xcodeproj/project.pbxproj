@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		28C23C722F601E9A0061DCD4 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 28C23C712F601E9A0061DCD4 /* Lottie */; };
 		28E6DE072F72A84E00D91BC5 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 28E6DE062F72A84E00D91BC5 /* SDWebImageSwiftUI */; };
+		B7C952382FB1B74E006AF275 /* RazorpayCheckout in Frameworks */ = {isa = PBXBuildFile; productRef = B7C952372FB1B74E006AF275 /* RazorpayCheckout */; };
 		B7CCF7DE2FA38B910036CC40 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = B7CCF7DD2FA38B910036CC40 /* GoogleMaps */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +32,7 @@
 			files = (
 				28E6DE072F72A84E00D91BC5 /* SDWebImageSwiftUI in Frameworks */,
 				28C23C722F601E9A0061DCD4 /* Lottie in Frameworks */,
+				B7C952382FB1B74E006AF275 /* RazorpayCheckout in Frameworks */,
 				B7CCF7DE2FA38B910036CC40 /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,6 +71,7 @@
 				28C23C712F601E9A0061DCD4 /* Lottie */,
 				28E6DE062F72A84E00D91BC5 /* SDWebImageSwiftUI */,
 				B7CCF7DD2FA38B910036CC40 /* GoogleMaps */,
+				B7C952372FB1B74E006AF275 /* RazorpayCheckout */,
 			);
 			productName = UserFreshyZo;
 			productReference = 28A555C52F741442006BD5FE /* UserFreshyZo.app */;
@@ -102,6 +105,7 @@
 				28C23C702F601E9A0061DCD4 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				28E6DE052F72A84E00D91BC5 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				B7CCF7DC2FA38B910036CC40 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+				B7C952362FB1B74E006AF275 /* XCRemoteSwiftPackageReference "razorpay-pod" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 28467FA42F497F8100B5E974;
@@ -373,6 +377,14 @@
 				minimumVersion = 3.1.4;
 			};
 		};
+		B7C952362FB1B74E006AF275 /* XCRemoteSwiftPackageReference "razorpay-pod" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/razorpay/razorpay-pod.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.3;
+			};
+		};
 		B7CCF7DC2FA38B910036CC40 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
@@ -393,6 +405,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 28E6DE052F72A84E00D91BC5 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		B7C952372FB1B74E006AF275 /* RazorpayCheckout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B7C952362FB1B74E006AF275 /* XCRemoteSwiftPackageReference "razorpay-pod" */;
+			productName = RazorpayCheckout;
 		};
 		B7CCF7DD2FA38B910036CC40 /* GoogleMaps */ = {
 			isa = XCSwiftPackageProductDependency;

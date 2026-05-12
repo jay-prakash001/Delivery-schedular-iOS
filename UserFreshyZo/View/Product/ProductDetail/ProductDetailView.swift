@@ -168,11 +168,34 @@ struct ProductDetailView: View {
                         
                         // 3. STICKY BOTTOM
                         if let product = displayProduct {
+                            
+                            
+                            let mediaUrls: [ProductAsset] = {
+                                // 1. Check if the high-quality assets gallery exists in the Detail Container
+                                if let detailAssets = detailContainer?.productAssets, !detailAssets.isEmpty {
+                                    return detailAssets
+                                }
+                                
+                                // 2. Check if the detailed product info has a specific image
+                                if !product.dairyProductImage.isEmpty {
+                                    return [ProductAsset(asset: product.dairyProductImage)]
+                                }
+                                
+                                // 3. ULTIMATE FALLBACK: Get the image from the LIST object
+                                // We find the same product ID in the main list to grab its 'dairyProductImage'
+                                if let listItem = productViewModel.productData?.productList.first(where: { $0.productId == id }),
+                                   !listItem.dairyProductImage.isEmpty {
+                                    return [ProductAsset(asset: listItem.dairyProductImage)]
+                                }
+                                
+                                // 4. Final safety net: Return an empty array or a placeholder image asset
+                                return [ProductAsset(asset: "https://freshyzo.com/wp-content/uploads/2024/06/WhatsApp-Image-2024-06-05-at-5.15.56-PM-e1717648546412.jpeg")]
+                            }()
                             ProductStickyBottomView(
                                 isPad: isPad,
                                 subscriptionQty: subscriptionQty,
                                 onContinue: {
-                                    mainRouter.navigate(to: .subscriptionstart(product: product, quantity: subscriptionQty))
+                                    mainRouter.navigate(to: .subscriptionstart(product: product, mediaUrls: mediaUrls, quantity: subscriptionQty))
                                 }
                             )
                             .background(Color.white)

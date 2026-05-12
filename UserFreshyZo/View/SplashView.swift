@@ -16,13 +16,15 @@ struct SplashView: View {
     @StateObject private var vm = HomeViewModel()
     @StateObject private var productViewModel : ProductViewModel = ProductViewModel()
     @StateObject private var checkOutViewModel : CheckOutViewModel = CheckOutViewModel()
-
+    
     @State private var isActive = false
     @State private var scale: CGFloat = 0.5
     @State private var opacity = 0.5
     
     var body: some View {
         let isPad = UIDevice.current.userInterfaceIdiom == .pad
+        
+        
         
         if isActive {
             
@@ -36,9 +38,11 @@ struct SplashView: View {
                             case .testreports : LabReportView()
                             case .article (let article) : ArticleView(article: article)
                             case . productdetails(let id ) : ProductDetailView(id : id)
-                            case . subscriptionstart( let product, let quantity) : SubscriptionView( product : product, quantity : quantity)
+                            case . subscriptionstart(let product, let mediaUrls, let quantity) : SubscriptionView(product : product, mediaUrls: mediaUrls,quantity : quantity)
+                                
+                                
                             case .allreview : AllReviewView()
-                            case .referandearn : Text("Refer and earn")
+                            case .referandearn : RefferalView()
 
                             default : EmptyView()
                             }
@@ -52,99 +56,113 @@ struct SplashView: View {
                 .environmentObject(checkOutViewModel)
                 .environmentObject(productViewModel)
             }else{
-                if(authViewModel.isLoggedIn){
-                    if(authViewModel.isNewCustomer) {
-                        NavigationStack(path: $authRouter.navPath) {
-                            // ✅ Set SignUpView as the ROOT for New Customers
-                            SignUpView()
-                                .navigationDestination(for: AuthRouter.Auth.self) { destination in
-                                    switch destination {
-                                    case .login_phone: LoginView()
-                                    case .login_otp: OtpView()
-                                    case .signUpName: SignUpView()
-                                    case .signUpMap: SignUpMapView()
+                
+                ZStack{
+                    
+                    
+                    if(authViewModel.isLoggedIn){
+                        if(authViewModel.isNewCustomer) {
+                            NavigationStack(path: $authRouter.navPath) {
+                                // ✅ Set SignUpView as the ROOT for New Customers
+                                SignUpView()
+                                    .navigationDestination(for: AuthRouter.Auth.self) { destination in
+                                        switch destination {
+                                        case .login_phone: LoginView()
+                                        case .login_otp: OtpView()
+                                        case .signUpName: SignUpView()
+                                        case .signUpMap: SignUpMapView()
+                                        }
                                     }
-                                }
-                        }
-                        .environmentObject(authViewModel)
-                        .environmentObject(authRouter)
-                    }else{
-                        NavigationStack(path : $mainRouter.navPath){
+                            }
+                            .environmentObject(authViewModel)
+                            .environmentObject(authRouter)
+                        }else{
+                            NavigationStack(path : $mainRouter.navPath){
+                                
+                                MainTabView()
+                                    .navigationDestination(for: MainRouter.MainFlow.self){destination in
+                                        switch destination {
+                                        case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
+                                        case .testreports : LabReportView()
+                                        case .article (let article) : ArticleView(article: article)
+                                            
+                                        case . productdetails(let id ) : ProductDetailView(id : id)
+                                        case . subscriptionstart(let product, let mediaUrls, let quantity) : SubscriptionView(product : product, mediaUrls: mediaUrls,quantity : quantity)
+                                            
+                                        case .allreview : AllReviewView()
+                                        case .referandearn : RefferalView()
+                                            
+                                        default : EmptyView()
+                                        }
+                                        
+                                    }
+                            }
+                            .environmentObject(authViewModel)
+                            .environmentObject(mainRouter)
+                            .environmentObject(vm)
+                            .environmentObject(cartViewModel)
+                            .environmentObject(checkOutViewModel)
+                            .environmentObject(productViewModel)
                             
-                            MainTabView()
-                                .navigationDestination(for: MainRouter.MainFlow.self){destination in
-                                    switch destination {
-                                    case .milkbanneroffer(let banner) : MilkTrialView(banner: banner)
-                                    case .testreports : LabReportView()
-                                    case .article (let article) : ArticleView(article: article)
-
-                                    case . productdetails(let id ) : ProductDetailView(id : id)
-                                    case . subscriptionstart(let product, let quantity) : SubscriptionView(product : product, quantity : quantity)
-
-                                    case .allreview : AllReviewView()
-                                    case .referandearn : Text("Refer and earn")
-
-                                    default : EmptyView()
-                                    }
-                                    
-                                }
+                            
                         }
-                        .environmentObject(authViewModel)
-                        .environmentObject(mainRouter)
-                        .environmentObject(vm)
-                        .environmentObject(cartViewModel)
-                        .environmentObject(checkOutViewModel)
-                        .environmentObject(productViewModel)
-
                         
-                    }
-                    
-                }else{
-                    
-                    NavigationStack(path : $authRouter.navPath){
-                        WellComeSliderView().navigationDestination(for: AuthRouter.Auth.self){
-                            destination in
-                            switch destination{
-                            case .login_phone : LoginView()
-                            case .login_otp :OtpView()
-                            case .signUpName : SignUpView()
-                            case .signUpMap : SignUpMapView()
+                        
+                        if authViewModel.showUnauthorizedAlert{
+                            SessionExpiredDialog(){
+                                authRouter.navigate(to: .login_phone)
+                                authViewModel.isLoggedIn = false
+                                
                             }
                         }
-                    }.environmentObject(authViewModel).environmentObject(authRouter)
+                       
+                        
+                    }else{
+                        
+                        NavigationStack(path : $authRouter.navPath){
+                            WellComeSliderView().navigationDestination(for: AuthRouter.Auth.self){
+                                destination in
+                                switch destination{
+                                case .login_phone : LoginView()
+                                case .login_otp :OtpView()
+                                case .signUpName : SignUpView()
+                                case .signUpMap : SignUpMapView()
+                                }
+                            }
+                        }.environmentObject(authViewModel).environmentObject(authRouter)
+                    }
                 }
             }
-            
-            
-            
-        } else {
-            VStack {
-                Image("freshyzo_logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: isPad ? 260 : 150)
-                    .scaleEffect(scale)
-                    .opacity(opacity)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemBackground))
-            .onAppear {
                 
-                withAnimation(.bouncy(duration: 1)) {
-                    scale = 1.5
-                    opacity = 1.5
+                
+            } else {
+                VStack {
+                    Image("freshyzo_logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: isPad ? 260 : 150)
+                        .scaleEffect(scale)
+                        .opacity(opacity)
                 }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    withAnimation {
-                        isActive = true
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(.systemBackground))
+                .onAppear {
+                    
+                    withAnimation(.bouncy(duration: 1)) {
+                        scale = 1.5
+                        opacity = 1.5
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        withAnimation {
+                            isActive = true
+                        }
                     }
                 }
             }
         }
     }
-}
-
-#Preview {
-    SplashView()
-}
+    
+    #Preview {
+        SplashView()
+    }

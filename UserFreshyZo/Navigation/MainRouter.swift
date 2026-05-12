@@ -20,7 +20,7 @@ final class MainRouter: ObservableObject {
         case testreports
         case article(article : HomeBlogs)
         case productdetails(id : String)
-        case subscriptionstart( product : ProductFromApi, quantity : Int )
+        case subscriptionstart( product : ProductFromApi, mediaUrls: [ProductAsset], quantity : Int )
         case allreview
         case referandearn
     }

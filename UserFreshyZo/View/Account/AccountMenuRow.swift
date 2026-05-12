@@ -54,10 +54,11 @@ struct AccountMenuRow: View {
     let iconFg: Color
     let title: String
     let subtitle: String
-
+    let onClick: () -> Void
     var body: some View {
         Button(action: {
-            // TODO: Wire up navigation
+            onClick()
+
         }) {
             AccountMenuRowContent(icon: icon,
                                   iconBg: iconBg,

@@ -8,21 +8,44 @@
 import SwiftUI
 import Lottie
 
+
+
+
 struct LottieView: UIViewRepresentable {
     
+    
     let name: String
+    var loopMode: LottieLoopMode = .loop
     
     func makeUIView(context: Context) -> UIView {
-        
         let view = UIView(frame: .zero)
         
-        let animationView = LottieAnimationView(name: name)
+        // Create the animation view
+        let animationView = LottieAnimationView()
         animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.play()
+        animationView.loopMode = loopMode
         
+        // --- Support for both .lottie and .json ---
+        
+        // 1. Try to load as a DotLottie file first (.lottie)
+        DotLottieFile.named(name) { result in
+            switch result {
+            case .success(let dotLottieFile):
+                animationView.loadAnimation(from: dotLottieFile)
+                animationView.play()
+            case .failure:
+                // 2. Fallback: Try to load as a standard JSON animation
+                if let animation = LottieAnimation.named(name) {
+                    animationView.animation = animation
+                    animationView.play()
+                } else {
+                    print("❌ Lottie Error: Could not find animation named \(name) in .lottie or .json format")
+                }
+            }
+        }
+        
+        // Setup Constraints
         animationView.translatesAutoresizingMaskIntoConstraints = false
-        
         view.addSubview(animationView)
         
         NSLayoutConstraint.activate([
@@ -33,11 +56,19 @@ struct LottieView: UIViewRepresentable {
         return view
     }
     
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func updateUIView(_ uiView: UIView, context: Context) {
+        // Here you could handle play/pause updates if you added @Binding properties
+    }
 }
 
+//#Preview {
+//    // This works whether your file is "empty_cart.json" or "empty_cart.lottie"
+//    LottieView(name: "empty_cart")
+//        .frame(width: 250, height: 250)
+//}
+
 #Preview {
-    LottieView(name: "empty_cart")
+    LottieView(name: "deliveryanim")
         .frame(width: 250, height: 250)
 
 }

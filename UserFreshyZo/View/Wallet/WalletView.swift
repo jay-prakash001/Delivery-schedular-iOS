@@ -30,6 +30,10 @@ struct WalletView: View {
                 .padding()
             }
             .background(Color(.systemGroupedBackground))
+        }.onAppear{
+            if vm.walletData == nil{
+                vm.getWalleteDetails()
+            }
         }
         .navigationBarHidden(true)
     }

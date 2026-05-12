@@ -14,6 +14,16 @@ class AuthViewModel: ObservableObject {
     
     // MARK: - UI State
     
+    @AppStorage("auth_token") var authToken: String?
+    var showUnauthorizedAlert : Bool {
+        authToken == nil
+    }
+      
+    
+    func clearToken(){
+        UserDefaults.standard.removeObject(forKey: "auth_token")
+    }
+    
     @Published var isLoading: Bool = false
     @Published var isLoggedIn: Bool = false
     

@@ -9,6 +9,8 @@ import SwiftUI
 
 // MARK: - SupportInfoSectionView
 struct SupportInfoSectionView: View {
+    
+    @EnvironmentObject var mainRouter : MainRouter
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             AccountSectionHeader("SUPPORT & INFO")
@@ -16,22 +18,27 @@ struct SupportInfoSectionView: View {
             VStack(spacing: 0) {
                 
                 // ← Test Report row
-                NavigationLink(destination: LabReportView()) {
-                    AccountMenuRowContent(icon: "bandage.fill",
+               
+                AccountMenuRow(icon: "bandage.fill",
                                          iconBg: Color(hex: "#E6F4F1"),
                                          iconFg: Color(hex: "#1A6B55"),
                                          title: "Test Report",
-                                         subtitle: "Know the quality of our products")
-                    .contentShape(Rectangle())
+                                         subtitle: "Know the quality of our products",
+                                          
+                    
+                ){
+                    mainRouter.navigate(to: .testreports)
                 }
-                .buttonStyle(PlainButtonStyle())
+              
                 AccountRowDivider()
                 
                 AccountMenuRow(icon: "gift.fill",
                                iconBg: Color(hex: "#FFF0E6"),
                                iconFg: Color(hex: "#B03A10"),
                                title: "Refer and Earn",
-                               subtitle: "Browse coupons, earn points")
+                               subtitle: "Browse coupons, earn points"){
+                    mainRouter.navigate(to: .referandearn)
+                }
                 AccountRowDivider()
                 
                 NavigationLink(destination: ComplaintView()) {
@@ -48,14 +55,18 @@ struct SupportInfoSectionView: View {
                                iconBg: Color(hex: "#E6F4F1"),
                                iconFg: Color(hex: "#1A6B55"),
                                title: "Language",
-                               subtitle: "Manage your language preferences")
+                               subtitle: "Manage your language preferences"){
+                    
+                }
                 AccountRowDivider()
                 
                 AccountMenuRow(icon: "exclamationmark.square.fill",
                                iconBg: Color(hex: "#E6F4F1"),
                                iconFg: Color(hex: "#1A6B55"),
                                title: "FAQs",
-                               subtitle: "FreshyZo related query")
+                               subtitle: "FreshyZo related query"){
+                    
+                }
                 AccountRowDivider()
                 
                 Link(destination: URL(string: "https://freshyzo.com/about-us/")!) {

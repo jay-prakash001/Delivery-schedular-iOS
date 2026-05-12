@@ -6,6 +6,8 @@ struct AccountView: View {
     
     @StateObject var vm = AccountViewModel()
     
+    @EnvironmentObject var authViewModel :AuthViewModel
+    
     var body: some View {
             VStack(spacing: 0) {
                 AccountHeaderView()
@@ -32,7 +34,7 @@ struct AccountView: View {
             .confirmationDialog("Are you sure you want to log out?",
                                 isPresented: $vm.showLogoutConfirm,
                                 titleVisibility: .visible) {
-                Button("Log Out", role: .destructive) { vm.logout() }
+                Button("Log Out", role: .destructive) { authViewModel.logout() }
                 Button("Cancel", role: .cancel) {}
             }
         }                                                   // ← close NavigationStack

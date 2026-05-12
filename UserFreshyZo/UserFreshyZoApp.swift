@@ -29,13 +29,18 @@ struct UserFreshyZoApp: App {
     var body: some Scene {
         WindowGroup {
             
-            SplashView()
-//            HomeCalendarDialog(calendarData: dummyCalendarData){
-//                
-//            }
+            
+                SplashView()
+                    .environmentObject(authViewModel)
+                    .preferredColorScheme(.light)
+                
+               
 
-                .environmentObject(authViewModel)
-                .preferredColorScheme(.light)
+
+            
+   
+            
+             
         }
     }
 }

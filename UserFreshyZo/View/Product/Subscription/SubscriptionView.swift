@@ -17,7 +17,7 @@ struct SubscriptionView: View {
     
     // Store the concrete product passed in
     var product: ProductFromApi
-    
+    var mediaUrls : [ProductAsset]
     // If not used, you can remove this EnvironmentObject.
     // Keeping it here in case other UI parts later need it.
     @EnvironmentObject var productViewModel: ProductViewModel
@@ -33,10 +33,11 @@ struct SubscriptionView: View {
     private let isPad = UIDevice.current.userInterfaceIdiom == .pad
     
 
-    init(product: ProductFromApi, quantity: Int = 2) {
+    init(product: ProductFromApi, mediaUrls : [ProductAsset],quantity: Int = 2) {
             // Assign properties first
             self.product = product
 //            self.quantity = quantity
+        self.mediaUrls = mediaUrls
             
             // Parse prices safely (handles strings like "104.00")
             let base = Int(Double(product.productPrice ?? "0") ?? 0)
@@ -244,8 +245,8 @@ struct SubscriptionView: View {
             
             Spacer()
             
-            AsyncImage(url: product.imageURL) { img in
-                img.resizable().scaledToFit()
+            AsyncImage(url: URL(string: mediaUrls[0].asset)) { img in
+                img.resizable().scaledToFit().clipped()
             } placeholder: {
                 Color(UIColor.systemGroupedBackground).overlay(ProgressView())
             }

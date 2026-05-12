@@ -12,25 +12,29 @@ struct StatsRowView: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            StatItemView(
-                title: "Total Added",
-                value: vm.totalAdded,
-                icon: "💰",
-                iconColor: .orange
-            )
-            StatItemView(
-                title: "Total Spent",
-                value: vm.totalSpent,
-                icon: "🛒",
-                iconColor: .teal
-            )
-            StatItemView(
-                title: "Cashback",
-                value: vm.cashback,
-                icon: "%",
-                iconColor: .red,
-                isBadgeIcon: true
-            )
+            
+            if let wallet = vm.walletData?.walletSummary{
+                StatItemView(
+                    title: "Total Added",
+                    value: wallet.totalRecharge,
+                    icon: "💰",
+                    iconColor: .orange
+                )
+                StatItemView(
+                    title: "Total Spent",
+                    value: wallet.totalSpent,
+                    icon: "🛒",
+                    iconColor: .teal
+                )
+                StatItemView(
+                    title: "Cashback",
+                    value: wallet.cashback,
+                    icon: "%",
+                    iconColor: .red,
+                    isBadgeIcon: true
+                )
+            }
+            
         }
         .padding(.horizontal, 2)
     }

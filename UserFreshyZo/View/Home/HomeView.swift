@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     
     @EnvironmentObject private var vm:  HomeViewModel
+    @EnvironmentObject private var autViewModel : AuthViewModel
     @EnvironmentObject private var productViewModel : ProductViewModel
     @EnvironmentObject var mainRouter : MainRouter
     @Binding var selectedTab: Int
@@ -51,6 +52,10 @@ struct HomeView: View {
                             ArticleSection(articles: vm.homeRes?.data.blogs ?? [])
                             SuggestionView()
                             BottomBrandingView()
+                            
+                            Button("Log Out"){
+                                autViewModel.clearToken()
+                            }
                         }
                         .padding(.horizontal, isPad ? 20 : 16)
                         .padding(.bottom, 30)

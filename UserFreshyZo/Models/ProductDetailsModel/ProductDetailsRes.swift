@@ -23,7 +23,7 @@ struct ProductDetailData: Codable, Equatable {
 }
 
 // MARK: - Product Asset
-struct ProductAsset: Codable, Identifiable, Equatable {
+struct ProductAsset: Codable, Identifiable, Equatable, Hashable {
     // Unique ID for SwiftUI ForEach loops
     var id: String { asset }
     let asset: String

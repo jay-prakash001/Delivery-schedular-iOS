@@ -15,7 +15,7 @@ struct WellComeSliderItemView: View {
                     .frame(width: 300, height: 300)
                 
                 LottieView(name: lottieName)
-                    .frame(width: 150, height: 150)
+                    .frame(width: 200, height: 200)
             }
             
             Spacer()

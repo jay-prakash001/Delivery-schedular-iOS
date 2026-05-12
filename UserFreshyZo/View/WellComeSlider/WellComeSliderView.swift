@@ -20,17 +20,17 @@ struct WellComeSliderView: View {
         Slide(
             title: "Easily track your orders",
             msg: "Track deliveries, manage subscriptions, and order on the go with our user-friendly app.",
-            lottieName: "empty_cart"
+            lottieName: "deliveryanim"
         ),
         Slide(
             title: "Fresh groceries delivered fast",
             msg: "Choose from fruits, vegetables, dairy and more with quick doorstep delivery.",
-            lottieName: "empty_cart"
+            lottieName: "deliveryanim"
         ),
         Slide(
             title: "Secure and simple payments",
             msg: "Pay with confidence using fast and secure checkout options.",
-            lottieName: "empty_cart"
+            lottieName: "deliveryanim"
         )
     ]
     

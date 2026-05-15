@@ -36,6 +36,7 @@ struct WalletView: View {
             }
         }
         .navigationBarHidden(true)
+        .environmentObject(vm)
     }
 }
 

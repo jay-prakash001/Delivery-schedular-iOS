@@ -220,7 +220,7 @@ struct ProductCardView: View {
                         
                         
                         
-                        mainRouter.navigate(to: .subscriptionstart(product: product,mediaUrls: [ProductAsset(asset: product.dairyProductImage)],quantity : quantity))
+                        mainRouter.navigate(to: .subscriptionstart(product: product,mediaUrls: [ProductAsset(asset: product.dairyProductImage)],quantity : quantity, offers: productViewModel.selectedProductData?.productOffers ?? []))
                     }
                     .buttonStyle(.plain) // Ensures it doesn't trigger parent gestures
                     .font(.system(size: isPad ? 16 : 12))

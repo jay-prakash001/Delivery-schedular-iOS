@@ -191,11 +191,13 @@ struct ProductDetailView: View {
                                 // 4. Final safety net: Return an empty array or a placeholder image asset
                                 return [ProductAsset(asset: "https://freshyzo.com/wp-content/uploads/2024/06/WhatsApp-Image-2024-06-05-at-5.15.56-PM-e1717648546412.jpeg")]
                             }()
+                            
+                            let offers = productViewModel.selectedProductData?.productOffers ?? []
                             ProductStickyBottomView(
                                 isPad: isPad,
                                 subscriptionQty: subscriptionQty,
                                 onContinue: {
-                                    mainRouter.navigate(to: .subscriptionstart(product: product, mediaUrls: mediaUrls, quantity: subscriptionQty))
+                                    mainRouter.navigate(to: .subscriptionstart(product: product, mediaUrls: mediaUrls, quantity: subscriptionQty, offers: offers ))
                                 }
                             )
                             .background(Color.white)

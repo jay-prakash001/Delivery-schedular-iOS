@@ -43,7 +43,7 @@ struct WalletSummary: Codable {
         case totalSpent = "total_spent"
         case balanceAmount = "balance_amount"
         case dailyRequired = "daily_required"
-        case survivalDays = "survival_days"
+        case survivalDays = "days_left"
         case balanceLow = "balance_low"
         case recommendedRecharge = "recommended_recharge"
     }
@@ -58,7 +58,7 @@ struct RecommendedRecharge: Codable, Identifiable {
 }
 
 // MARK: - RechargeHistory
-struct RechargeHistory: Codable, Identifiable {
+struct RechargeHistory: Codable, Identifiable, Hashable {
     var id: String { rechargeId } // Maps to recharge_id
     let rechargeId: String
     let rechargeAmount: String // Note: JSON shows this as a String "250"

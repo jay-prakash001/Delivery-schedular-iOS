@@ -9,9 +9,11 @@ struct ProductDetailResponse: Codable {
 
 // MARK: - Data Container
 struct ProductDetailData: Codable, Equatable {
+   
     let productDetails: [ProductFromApi]
     let productAssets: [ProductAsset] // Updated from [String] to [ProductAsset]
     let productFaq: [ProductFAQ]
+    let productOffers: [ProductOffer]
     let review: ReviewContainer
 
     enum CodingKeys: String, CodingKey {
@@ -19,6 +21,7 @@ struct ProductDetailData: Codable, Equatable {
         case productAssets = "product_assets"
         case productFaq = "product_faq"
         case review
+        case productOffers = "offer"
     }
 }
 
@@ -106,5 +109,39 @@ struct Feedback: Codable, Identifiable, Equatable {
         case timeStamp = "time_stamp"
         case feedbackStatus = "feedback_status"
         case customerName = "customer_name"
+    }
+}
+
+struct ProductOffer: Codable, Identifiable , Equatable, Hashable{
+    // Identifiable requires an 'id'. We map 'offer_id' to 'id'.
+    var id: String { offerId }
+    
+    let offerId: String
+    let productId: String
+    let days: String
+    let amount: String
+    let offPercent: String
+    let freeMilk: String
+    let couponCode: String
+
+    enum CodingKeys: String, CodingKey {
+        case offerId = "offer_id"
+        case productId = "product_id"
+        case days
+        case amount
+        case offPercent = "off_percent"
+        case freeMilk = "free_milk"
+        case couponCode = "coupon_code"
+    }
+    
+    // MARK: - Helpers
+    // These make it easier to display in your SwiftUI Views
+    
+    var displayAmount: Int {
+        Int(amount) ?? 0
+    }
+    
+    var discountLabel: String {
+        "\(offPercent)% OFF"
     }
 }

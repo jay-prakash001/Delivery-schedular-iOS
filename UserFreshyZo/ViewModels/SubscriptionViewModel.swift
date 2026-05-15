@@ -78,7 +78,7 @@ final class SubscriptionViewModel: ObservableObject {
     }
 
     func decreaseSimpleQty() {
-        guard state.simpleQty > 2 else { return }
+        guard state.simpleQty > 1 else { return }
         var s = state
         s.simpleQty -= 1
         state = s
@@ -210,7 +210,7 @@ final class SubscriptionViewModel: ObservableObject {
         // 1. Deliveries per month
         let deliveriesPerMonth: Int
         switch s.selectedFrequency {
-        case .daily:   deliveriesPerMonth = 30
+        case .offers:   deliveriesPerMonth = 30
         case .altDays: deliveriesPerMonth = Int(s.altDayOption.deliveriesPerMonth)
         case .weekly:  deliveriesPerMonth = s.activeDaysCount * 4
         }
@@ -275,7 +275,7 @@ final class SubscriptionViewModel: ObservableObject {
         let unit = qty == 1 ? "packet" : "packets"
 
         switch state.selectedFrequency {
-        case .daily:
+        case .offers:
             return "\(qty) \(unit) × daily = ~₹\(formatPrice(totalMonthly))/month"
         case .altDays:
             let intervalText: String

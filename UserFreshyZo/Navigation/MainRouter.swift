@@ -20,9 +20,10 @@ final class MainRouter: ObservableObject {
         case testreports
         case article(article : HomeBlogs)
         case productdetails(id : String)
-        case subscriptionstart( product : ProductFromApi, mediaUrls: [ProductAsset], quantity : Int )
+        case subscriptionstart( product : ProductFromApi, mediaUrls: [ProductAsset], quantity : Int, offers: [ProductOffer] )
         case allreview
         case referandearn
+        case walletrechargehistory(rechargeHistory : [RechargeHistory])
     }
 
     func navigate(to screen: MainFlow) {

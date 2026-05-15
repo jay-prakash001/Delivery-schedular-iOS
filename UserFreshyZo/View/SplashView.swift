@@ -38,12 +38,12 @@ struct SplashView: View {
                             case .testreports : LabReportView()
                             case .article (let article) : ArticleView(article: article)
                             case . productdetails(let id ) : ProductDetailView(id : id)
-                            case . subscriptionstart(let product, let mediaUrls, let quantity) : SubscriptionView(product : product, mediaUrls: mediaUrls,quantity : quantity)
+                            case . subscriptionstart(let product, let mediaUrls, let quantity, let offers) : SubscriptionView(product : product, mediaUrls: mediaUrls,quantity : quantity, offers: offers)
                                 
                                 
                             case .allreview : AllReviewView()
                             case .referandearn : RefferalView()
-
+                            case .walletrechargehistory(let rechargeHistory) : WalletRechargeHistoryView(rechargeHistory: rechargeHistory)
                             default : EmptyView()
                             }
                             
@@ -87,11 +87,12 @@ struct SplashView: View {
                                         case .article (let article) : ArticleView(article: article)
                                             
                                         case . productdetails(let id ) : ProductDetailView(id : id)
-                                        case . subscriptionstart(let product, let mediaUrls, let quantity) : SubscriptionView(product : product, mediaUrls: mediaUrls,quantity : quantity)
+                                        case . subscriptionstart(let product, let mediaUrls, let quantity, let offers) : SubscriptionView(product : product, mediaUrls: mediaUrls,quantity : quantity, offers: offers)
                                             
                                         case .allreview : AllReviewView()
                                         case .referandearn : RefferalView()
-                                            
+                                        case .walletrechargehistory(let rechargeHistory) : WalletRechargeHistoryView(rechargeHistory: rechargeHistory)
+
                                         default : EmptyView()
                                         }
                                         

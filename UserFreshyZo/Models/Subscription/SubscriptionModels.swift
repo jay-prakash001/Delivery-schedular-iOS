@@ -10,9 +10,9 @@ import Foundation
 // MARK: - Delivery Frequency
 
 enum DeliveryFrequency: String, CaseIterable, Identifiable {
-    case daily   = "Daily"
-    case altDays = "Alt Days"
+    case altDays = "Daily"
     case weekly  = "Weekly"
+    case offers   = "Offers"
 
     var id: String { rawValue }
 }
@@ -59,7 +59,7 @@ struct WeeklyDayState: Identifiable, Equatable {
 
 struct SubscriptionUiState: Equatable {
 
-    var selectedFrequency: DeliveryFrequency = .daily
+    var selectedFrequency: DeliveryFrequency = .altDays
     var altDayOption:      AltDayOption      = .everyAlternate
     var weeklyDayStates:   [WeeklyDayState]  = WeeklyDayState.defaults()
     var simpleQty:         Int               = 1

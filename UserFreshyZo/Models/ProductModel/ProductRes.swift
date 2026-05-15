@@ -142,6 +142,7 @@ struct ProductFromApi: Codable, Identifiable, Hashable {
 
 
 
+
 //struct ProductFromApi: Codable, Identifiable, Hashable {
 //    var id: String { productId }
 //    

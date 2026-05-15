@@ -196,7 +196,7 @@ struct SimpleQuantityCard: View {
                 }
                 Spacer()
                 PillStepperView(
-                    value: qty, min: 2, max: 10,
+                    value: qty, min: 1, max: 10,
                     onIncrease: onIncrease,
                     onDecrease: onDecrease
                 )
@@ -444,7 +444,6 @@ struct OfferBanner: View {
 }
 
 // MARK: - Date Picker Sheet
-
 struct DatePickerSheet: View {
     @Binding var selectedDate: Date
     let minimumDate: Date
@@ -452,28 +451,65 @@ struct DatePickerSheet: View {
 
     var body: some View {
         NavigationStack {
-            DatePicker(
-                "Start Date",
-                selection: $selectedDate,
-                in: minimumDate...,
-                displayedComponents: .date
-            )
-            .datePickerStyle(.wheel)
-            .accentColor(Color("AppGreenColor"))
-            .labelsHidden()
-            .padding()
+            ZStack {
+                // 1. Force a solid white background for the entire view
+                Color.white.ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    // Top Info Section
+                    VStack(spacing: 12) {
+                        Image(systemName: "calendar")
+                            .font(.largeTitle)
+                            .foregroundColor(Color("AppGreenColor"))
+//                        
+//                        Text("Choose Date")
+//                            .font(.title3.bold())
+                    }
+                    .padding(.top, 30)
+                    
+                    Spacer()
+
+                    // 2. The Picker with a flat background
+                    DatePicker(
+                        "",
+                        selection: $selectedDate,
+                        in: minimumDate...,
+                        displayedComponents: .date
+                    )
+                    .datePickerStyle(.wheel)
+                    .labelsHidden()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white) // Ensure no transparency here
+                    
+                    Spacer()
+                    
+                    // Bottom Button
+                    Button(action: { dismiss() }) {
+                        Text("Done")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color("AppGreenColor"))
+                            .cornerRadius(12)
+                    }
+                    .padding(20)
+                }
+            }
             .navigationTitle("Select Start Date")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                        .foregroundColor(Color("AppGreenColor"))
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundColor(.gray)
                 }
             }
+            // 3. Force the Navigation Bar to be solid white (removes blur)
+            .toolbarBackground(Color.white, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
     }
 }
-
 
 // MARK: - Subscription Success Popup
 

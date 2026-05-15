@@ -17,11 +17,12 @@ struct SubscriptionView: View {
     
     // Store the concrete product passed in
     var product: ProductFromApi
-    var mediaUrls : [ProductAsset]
-    // If not used, you can remove this EnvironmentObject.
-    // Keeping it here in case other UI parts later need it.
+    var mediaUrls: [ProductAsset]
+    // Keep the initially passed offers immutable; we will derive the live value from ProductViewModel.
+    private let initialOffers: [ProductOffer]
+    
     @EnvironmentObject var productViewModel: ProductViewModel
-    @EnvironmentObject var cartVM : CartViewModel
+    @EnvironmentObject var cartVM: CartViewModel
     // ── ViewModel ─────────────────────────────────────────────────────
     @StateObject private var vm = SubscriptionViewModel()
     
@@ -32,35 +33,35 @@ struct SubscriptionView: View {
     let quantity = 2
     private let isPad = UIDevice.current.userInterfaceIdiom == .pad
     
+    // Computed offers source of truth: prefer data from ProductViewModel if available.
+    private var currentOffers: [ProductOffer] {
+        productViewModel.selectedProductData?.productOffers ?? initialOffers
+    }
 
-    init(product: ProductFromApi, mediaUrls : [ProductAsset],quantity: Int = 2) {
-            // Assign properties first
-            self.product = product
-//            self.quantity = quantity
+    init(product: ProductFromApi, mediaUrls: [ProductAsset], quantity: Int = 2, offers: [ProductOffer]) {
+        // Assign properties first
+        self.product = product
         self.mediaUrls = mediaUrls
-            
-            // Parse prices safely (handles strings like "104.00")
-            let base = Int(Double(product.productPrice ?? "0") ?? 0)
-            let mrp = Int(Double(product.dairyMrp ?? "0") ?? 0)
-            
-            // 3. Initialize StateObject using the local 'quantity' parameter
-            // DO NOT use self.quantity here; use the 'quantity' from the init arguments
-            self._vm = StateObject(wrappedValue: {
-                let viewModel = SubscriptionViewModel()
-                viewModel.setup(
-                    basePrice: base,
-                    mrpPrice: mrp,
-                    initialQty: quantity // <--- Uses the passed value directly
-                )
-                return viewModel
-            }())
-            
-            print("Initializing subscription for \(product.productName ?? "") with qty: \(quantity)")
-        }
+        self.initialOffers = offers
+        
+        // Parse prices safely (handles strings like "104.00")
+        let base = Int(Double(product.productPrice) ?? 0)
+        let mrp = Int(Double(product.dairyMrp) ?? 0)
+        
+        // Initialize StateObject using the local 'quantity' parameter
+        self._vm = StateObject(wrappedValue: {
+            let viewModel = SubscriptionViewModel()
+            viewModel.setup(
+                basePrice: base,
+                mrpPrice: mrp,
+                initialQty: quantity
+            )
+            return viewModel
+        }())
+        
+        print("Initializing subscription for \(product.productName) with qty: \(quantity)")
+    }
 
-    // MARK: - Init
-
-    
     // MARK: - Body
 
     var body: some View {
@@ -78,6 +79,11 @@ struct SubscriptionView: View {
                 }
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 .zIndex(1)
+            }
+        }
+        .onAppear {
+            if currentOffers.isEmpty {
+                productViewModel.fetchProductDetailsById(product.id)
             }
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: vm.isSuccess)
@@ -138,6 +144,7 @@ struct SubscriptionView: View {
                 .horizontalPadding(isPad: isPad)
                 .padding(.top, 14)
                 
+                
                 // ── Alt Days Options (conditional) ────────────────────
                 if vm.state.selectedFrequency == .altDays {
                     AltDayOptionsCard(
@@ -146,11 +153,10 @@ struct SubscriptionView: View {
                     )
                     .horizontalPadding(isPad: isPad)
                     .padding(.top, 14)
-                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
                 
                 // ── Quantity Card OR Weekly Days Card ─────────────────
-                if vm.state.selectedFrequency == .weekly {
+                else if vm.state.selectedFrequency == .weekly {
                     WeeklyDaysCard(
                         days: vm.state.weeklyDayStates,
                         pricePerUnit: Double(vm.state.basePrice),
@@ -160,27 +166,25 @@ struct SubscriptionView: View {
                     )
                     .horizontalPadding(isPad: isPad)
                     .padding(.top, 14)
-                    .transition(.move(edge: .top).combined(with: .opacity))
                 } else {
+                    Text("\(currentOffers)")
                     SimpleQuantityCard(
                         qty: vm.state.simpleQty,
                         summaryLine: vm.state.summaryLine,
                         onIncrease: {
-                            
                             vm.increaseSimpleQty()
                             cartVM.addItem(
                                 id: product.id,
                                 name: product.cleanName,
                                 price: Double(product.productPrice) ?? 0.0,
                                 mrp: Double(product.dairyMrp) ?? 0.0,
-                                image: product.dairyProductImage ?? "",
+                                image: product.dairyProductImage,
                                 variant: String(vm.state.simpleQty + 1)
                             )
-                            
                         },
-                        onDecrease: { vm.decreaseSimpleQty()
-                            cartVM.removeItem(id : product.id)
-                            
+                        onDecrease: {
+                            vm.decreaseSimpleQty()
+                            cartVM.removeItem(id: product.id)
                         }
                     )
                     .horizontalPadding(isPad: isPad)
@@ -245,7 +249,7 @@ struct SubscriptionView: View {
             
             Spacer()
             
-            AsyncImage(url: URL(string: mediaUrls[0].asset)) { img in
+            AsyncImage(url: URL(string: mediaUrls.first?.asset ?? "")) { img in
                 img.resizable().scaledToFit().clipped()
             } placeholder: {
                 Color(UIColor.systemGroupedBackground).overlay(ProgressView())
@@ -313,4 +317,3 @@ private extension View {
         self.padding(.horizontal, isPad ? 24 : 16)
     }
 }
-

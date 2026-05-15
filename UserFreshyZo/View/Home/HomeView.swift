@@ -24,6 +24,8 @@ struct HomeView: View {
         
         ZStack(alignment: .top) {
             
+            
+            if vm.homeRes != nil{
                 VStack(spacing: 0) {
                     HeaderView(walletAmount: "\(vm.calendar.first?.remainingBalance ?? 0)")
                 
@@ -63,6 +65,10 @@ struct HomeView: View {
                 }
                 
                 .background(Color(.white))
+            }else{
+                HomeShimmerView()
+            }
+             
             
             
             if let date = selectedDate {

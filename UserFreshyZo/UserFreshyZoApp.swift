@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SVGView
 
 
 
@@ -24,23 +25,22 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct UserFreshyZoApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-
+    
     @StateObject var authViewModel = AuthViewModel()
     var body: some Scene {
         WindowGroup {
             
+            //
+                            SplashView()
+                                .environmentObject(authViewModel)
+                                .preferredColorScheme(.light)
             
-                SplashView()
-                    .environmentObject(authViewModel)
-                    .preferredColorScheme(.light)
-                
-               
-
-
             
-   
             
-             
+//            VacationView()
+            
+            
+            
         }
     }
 }

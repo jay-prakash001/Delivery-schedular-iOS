@@ -1,5 +1,5 @@
 {
-  "originHash" : "02ee969f68d5314be4f5fdfbd962f769b6103bd83cbfbf721999e86216882258",
+  "originHash" : "1dbdce59cc06400832fa4a4323b194583d3cb9042869681bad9da209c6174cc7",
   "pins" : [
     {
       "identity" : "ios-maps-sdk",
@@ -44,6 +44,15 @@
       "state" : {
         "revision" : "0e331457ca9af2f0b08bcaa138a91ffb907b004f",
         "version" : "3.1.4"
+      }
+    },
+    {
+      "identity" : "svgview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/exyte/SVGView",
+      "state" : {
+        "revision" : "6465962facdd25cb96eaebc35603afa2f15d2c0d",
+        "version" : "1.0.6"
       }
     }
   ],

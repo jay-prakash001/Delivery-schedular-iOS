@@ -1,0 +1,9 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 80 40"
+    id="vector">
+    <path
+        id="path"
+        d="M 70 28 L 16 28 Q 6 28 6 20 Q 6 12 14 12 Q 14 4 24 4 Q 30 4 34 8 Q 38 2 48 2 Q 62 2 62 14 Q 72 14 74 20 Q 76 26 70 28 Z"
+        fill="#ffffff"/>
+</svg>

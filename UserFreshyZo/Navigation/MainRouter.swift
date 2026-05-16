@@ -24,6 +24,8 @@ final class MainRouter: ObservableObject {
         case allreview
         case referandearn
         case walletrechargehistory(rechargeHistory : [RechargeHistory])
+        case invoice
+        case generateinvoice(startDate: String, endDate: String)
     }
 
     func navigate(to screen: MainFlow) {

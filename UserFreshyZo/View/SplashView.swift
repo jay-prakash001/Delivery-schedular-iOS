@@ -44,6 +44,8 @@ struct SplashView: View {
                             case .allreview : AllReviewView()
                             case .referandearn : RefferalView()
                             case .walletrechargehistory(let rechargeHistory) : WalletRechargeHistoryView(rechargeHistory: rechargeHistory)
+                            case .invoice : InvoiceDateRangeView()
+                            case .generateinvoice(let startDate, let endDate) : InvoiceView(startDate: startDate, endDate: endDate)
                             default : EmptyView()
                             }
                             
@@ -92,6 +94,8 @@ struct SplashView: View {
                                         case .allreview : AllReviewView()
                                         case .referandearn : RefferalView()
                                         case .walletrechargehistory(let rechargeHistory) : WalletRechargeHistoryView(rechargeHistory: rechargeHistory)
+                                        case .invoice : InvoiceDateRangeView()
+                                        case .generateinvoice(let startDate, let endDate) : InvoiceView(startDate: startDate, endDate: endDate)
 
                                         default : EmptyView()
                                         }

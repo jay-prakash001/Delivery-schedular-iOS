@@ -28,6 +28,8 @@ struct SubscriptionView: View {
     
     // ── Local UI-only state ───────────────────────────────────────────
     @State private var showDatePicker = false
+    @State private var selectedOffer: ProductOffer? = nil
+    @State private var selectedOfferIndex = 0
     @Environment(\.dismiss) private var dismiss
     
     let quantity = 2
@@ -37,13 +39,15 @@ struct SubscriptionView: View {
     private var currentOffers: [ProductOffer] {
         productViewModel.selectedProductData?.productOffers ?? initialOffers
     }
-
+    
     init(product: ProductFromApi, mediaUrls: [ProductAsset], quantity: Int = 2, offers: [ProductOffer]) {
         // Assign properties first
         self.product = product
         self.mediaUrls = mediaUrls
         self.initialOffers = offers
-        
+        if !offers.isEmpty {
+            self.selectedOffer = offers.first
+        }
         // Parse prices safely (handles strings like "104.00")
         let base = Int(Double(product.productPrice) ?? 0)
         let mrp = Int(Double(product.dairyMrp) ?? 0)
@@ -61,9 +65,9 @@ struct SubscriptionView: View {
         
         print("Initializing subscription for \(product.productName) with qty: \(quantity)")
     }
-
+    
     // MARK: - Body
-
+    
     var body: some View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 0) {
@@ -71,7 +75,7 @@ struct SubscriptionView: View {
                 scrollContent
             }
             subscribeButton
-
+            
             // ── Success Popup ─────────────────────────────────────────
             if vm.isSuccess {
                 SubscriptionSuccessPopup {
@@ -144,6 +148,13 @@ struct SubscriptionView: View {
                 .horizontalPadding(isPad: isPad)
                 .padding(.top, 14)
                 
+                StartDateCard(
+                    formattedDate: vm.state.startDateFormatted,
+                    deliveryBeginsText: vm.state.deliveryBeginsText,
+                    onTap: { showDatePicker = true }
+                )
+                .horizontalPadding(isPad: isPad)
+                .padding(.top, 14)
                 
                 // ── Alt Days Options (conditional) ────────────────────
                 if vm.state.selectedFrequency == .altDays {
@@ -167,38 +178,56 @@ struct SubscriptionView: View {
                     .horizontalPadding(isPad: isPad)
                     .padding(.top, 14)
                 } else {
-                    Text("\(currentOffers)")
-                    SimpleQuantityCard(
-                        qty: vm.state.simpleQty,
-                        summaryLine: vm.state.summaryLine,
-                        onIncrease: {
-                            vm.increaseSimpleQty()
-                            cartVM.addItem(
-                                id: product.id,
-                                name: product.cleanName,
-                                price: Double(product.productPrice) ?? 0.0,
-                                mrp: Double(product.dairyMrp) ?? 0.0,
-                                image: product.dairyProductImage,
-                                variant: String(vm.state.simpleQty + 1)
-                            )
-                        },
-                        onDecrease: {
-                            vm.decreaseSimpleQty()
-                            cartVM.removeItem(id: product.id)
+                    
+                    
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        
+                        HStack(spacing: 12) {
+                            
+                            ForEach(Array(currentOffers.enumerated()), id: \.element.id) { index, item in
+                                
+                                ProductOfferView(
+                                    offer: item,
+                                    
+                                    isSelected: selectedOfferIndex == index,
+                                    isPopular: index == 0
+                                )
+                                .onTapGesture {
+                                    selectedOfferIndex = index
+                                    selectedOffer = item
+                                }
+                                
+                                
+                            }
                         }
-                    )
-                    .horizontalPadding(isPad: isPad)
-                    .padding(.top, 14)
+                    }
+                    .padding()
+                    //                    SimpleQuantityCard(
+                    //                        qty: vm.state.simpleQty,
+                    //                        summaryLine: vm.state.summaryLine,
+                    //                        onIncrease: {
+                    //                            vm.increaseSimpleQty()
+                    //                            cartVM.addItem(
+                    //                                id: product.id,
+                    //                                name: product.cleanName,
+                    //                                price: Double(product.productPrice) ?? 0.0,
+                    //                                mrp: Double(product.dairyMrp) ?? 0.0,
+                    //                                image: product.dairyProductImage,
+                    //                                variant: String(vm.state.simpleQty + 1)
+                    //                            )
+                    //                        },
+                    //                        onDecrease: {
+                    //                            vm.decreaseSimpleQty()
+                    //                            cartVM.removeItem(id: product.id)
+                    //                        }
+                    //                    )
+                    //                    .horizontalPadding(isPad: isPad)
+                    //                    .padding(.top, 14)
                 }
                 
                 // ── Start Date Card ───────────────────────────────────
-                StartDateCard(
-                    formattedDate: vm.state.startDateFormatted,
-                    deliveryBeginsText: vm.state.deliveryBeginsText,
-                    onTap: { showDatePicker = true }
-                )
-                .horizontalPadding(isPad: isPad)
-                .padding(.top, 14)
+              
                 
                 // ── Price Summary Card ────────────────────────────────
                 PriceSummaryCard(state: vm.state)

@@ -112,10 +112,12 @@ struct Feedback: Codable, Identifiable, Equatable {
     }
 }
 
-struct ProductOffer: Codable, Identifiable , Equatable, Hashable{
-    // Identifiable requires an 'id'. We map 'offer_id' to 'id'.
+struct ProductOffer: Codable, Identifiable, Equatable, Hashable {
+    
+    // MARK: - ID
     var id: String { offerId }
     
+    // MARK: - Properties
     let offerId: String
     let productId: String
     let days: String
@@ -135,13 +137,54 @@ struct ProductOffer: Codable, Identifiable , Equatable, Hashable{
     }
     
     // MARK: - Helpers
-    // These make it easier to display in your SwiftUI Views
     
+    /// Final amount after discount
     var displayAmount: Int {
         Int(amount) ?? 0
     }
     
+    /// Discount percentage label
     var discountLabel: String {
         "\(offPercent)% OFF"
+    }
+    
+    /// Discount percentage as Int
+    var offPercentageValue: Int {
+        Int(offPercent) ?? 0
+    }
+    
+    /// Original amount before discount
+    var originalAmount: Int {
+        let percent = Double(offPercentageValue) / 100
+        let original = Double(displayAmount) * (1 + percent)
+        return Int(original.rounded())
+    }
+    
+    /// Saved amount
+    var offAmount: Int {
+        originalAmount - displayAmount
+    }
+    
+    /// Extract first number from "3 Months"
+    var durationValue: Int {
+        Int(days.components(separatedBy: " ").first ?? "") ?? 0
+    }
+    
+    /// Extract second word from "3 Months"
+    var durationType: String {
+        days.components(separatedBy: " ").dropFirst().first ?? ""
+    }
+    
+    /// Total deliveries
+    /// Example:
+    /// 3 Months = 3 * 30 = 90
+    var totalDeliveries: Int {
+        if durationType.lowercased().contains("month") {
+            return durationValue * 30
+        } else if durationType.lowercased().contains("week") {
+            return durationValue * 7
+        } else {
+            return durationValue
+        }
     }
 }

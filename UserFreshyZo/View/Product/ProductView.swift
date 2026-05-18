@@ -29,7 +29,9 @@ struct ProductView: View {
         .navigationBarHidden(true)
         .onAppear {
             
-            
+            if vm.productData == nil{
+                vm.getProductList()
+            }
             
         }
     }

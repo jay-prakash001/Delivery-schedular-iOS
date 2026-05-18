@@ -1,3 +1,9 @@
+////
+///
+///
+///
+///
+///
 //
 //   VacationView.swift
 //   UserFreshyZo
@@ -7,20 +13,56 @@
 
 import SwiftUI
 
-
 struct VacationView: View {
     
     // Properties to save chosen calendar date intervals
     @State private var startDate = Date()
     @State private var endDate = Date()
+    @State private var selectedDays = 0
+    
+    // Quick select helper array containing tuples of (Display Text, Days Value)
+    private let quickDurations: [(label: String, days: Int)] = [
+        ("1 Day", 1),
+        ("2 Days", 2),
+        ("3 Days", 3),
+        ("5 Days", 5),
+        ("1 Week", 7),
+        ("2 Weeks", 14)
+    ]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             
-            // 1. Animated Canvas Header Component (No forced layout rounding)
+            // 1. Animated Canvas Header Component
             VacationAnimationView()
                 .frame(height: 200)
             
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Quick Select Duration")
+                    .font(.caption2)
+                    .bold()
+                    .foregroundColor(.gray)
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(quickDurations, id: \.label) { duration in
+                            Button {
+                                applyQuickDuration(days: duration.days)
+                            } label: {
+                                Text(duration.label)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 8)
+                                    .background(isCurrentDuration(days: duration.days) ? Color.thirdGreen : Color(.systemGroupedBackground))
+                                    .foregroundColor(isCurrentDuration(days: duration.days) ? .white : .primary)
+                                    .cornerRadius(20)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal)
             // 2. Form Section Header
             Text("Start Vacation")
                 .font(.headline)
@@ -41,8 +83,10 @@ struct VacationView: View {
                         selectedDate: $startDate,
                         dateRange: Date.distantPast...Date.distantFuture
                     )
-                    .padding(8).overlay{
-                        RoundedRectangle(cornerRadius: 12).stroke(.gray, lineWidth: 1)
+                    .padding(8)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                     }
                 }
                 
@@ -58,10 +102,12 @@ struct VacationView: View {
                     CustomDateSelectorByDate(
                         selectedDate: $endDate,
                         dateRange: startDate...Date.distantFuture
-                    ).padding(8).overlay{
-                        RoundedRectangle(cornerRadius: 12).stroke(.gray, lineWidth: 1)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                }
+                    )
+                    .padding(8)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                    }
                 }
             }
             .padding(.horizontal)
@@ -70,6 +116,28 @@ struct VacationView: View {
                     endDate = newValue
                 }
             }
+            
+            if isCurrentDurationGreaterThanZero() {
+                HStack(spacing: 8) {
+                    Text("🕒 \(calculateSelectedDays()) days selected")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.blue)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .background(Color.blue.opacity(0.1)) // 10% opacity blue background for a soft look
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.blue.opacity(0.4), lineWidth: 1) // 40% opacity blue border
+                )
+                .padding(.horizontal)
+            }
+            
+       
+            // ------------------------------------------
             
             // 4. Action Operations Buttons Interface
             HStack(spacing: 16) {
@@ -117,6 +185,41 @@ struct VacationView: View {
         .navigationTitle("Vacation")
         .navigationBarTitleDisplayMode(.inline)
     }
+    
+    // MARK: - Quick Select Helper Methods
+    
+    /// Calculates and sets the end date based on the chosen number of days relative to the start date.
+    private func applyQuickDuration(days: Int) {
+        if let calculatedEndDate = Calendar.current.date(byAdding: .day, value: days, to: startDate) {
+            endDate = calculatedEndDate
+        }
+    }
+    
+    
+    /// Calculates total days selected between start and end date
+    private func calculateSelectedDays() -> Int {
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: startDate)
+        let end = calendar.startOfDay(for: endDate)
+        return calendar.dateComponents([.day], from: start, to: end).day ?? 0
+    }
+
+    /// Helper verification check for the conditional banner block
+    private func isCurrentDurationGreaterThanZero() -> Bool {
+        return calculateSelectedDays() > 0
+    }
+    /// Determines whether the currently selected date range matches a specific pill duration item to highlight it.
+    private func isCurrentDuration(days: Int) -> Bool {
+        let calendar = Calendar.current
+        // Strip hours/minutes from dates to get accurate day calculation
+        let startComponents = calendar.startOfDay(for: startDate)
+        let endComponents = calendar.startOfDay(for: endDate)
+        
+        if let differenceInDays = calendar.dateComponents([.day], from: startComponents, to: endComponents).day {
+            return differenceInDays == days
+        }
+        return false
+    }
 }
 
 // MARK: - Wobble & Float Custom Modifier
@@ -141,8 +244,8 @@ struct WobbleModifier: ViewModifier {
             }
     }
 }
+
 // MARK: - FIXED 1-TAP SELECTOR
-// MARK: - AUTO-DISMISS SELECTOR
 struct CustomDateSelectorByDate: View {
     @Binding var selectedDate: Date
     let dateRange: ClosedRange<Date>
@@ -178,7 +281,6 @@ struct CustomDateSelectorByDate: View {
             .datePickerStyle(.graphical)
             .padding()
             .presentationDetents([.medium])
-            // Detects the tap choice immediately and closes the window automatically
             .onChange(of: selectedDate) { _, _ in
                 showCalendar = false
             }
@@ -192,7 +294,206 @@ extension View {
     }
 }
 
-// MARK: - Main View
+
+
+
+#Preview {
+    VacationView()
+}
+////   VacationView.swift
+////   UserFreshyZo
+////
+////   Created by Rahul Verma on 16/05/26.
+////
+//
+//import SwiftUI
+//
+//
+//struct VacationView: View {
+//    
+//    // Properties to save chosen calendar date intervals
+//    @State private var startDate = Date()
+//    @State private var endDate = Date()
+//    
+//    var body: some View {
+//        VStack(alignment: .leading, spacing: 16) {
+//            
+//            // 1. Animated Canvas Header Component (No forced layout rounding)
+//            VacationAnimationView()
+//                .frame(height: 200)
+//            
+//            // 2. Form Section Header
+//            Text("Start Vacation")
+//                .font(.headline)
+//                .foregroundColor(.primary)
+//                .padding(.horizontal)
+//            
+//            // 3. Date Selection Input Section (1-Tap, No Hidden Capsules)
+//            HStack(alignment: .center, spacing: 20) {
+//                            
+//                // Start Date Input Block
+//                VStack(alignment: .leading, spacing: 6) {
+//                    Text("Start Date")
+//                        .font(.caption2)
+//                        .bold()
+//                        .foregroundColor(.gray)
+//                    
+//                    CustomDateSelectorByDate(
+//                        selectedDate: $startDate,
+//                        dateRange: Date.distantPast...Date.distantFuture
+//                    )
+//                    .padding(8).overlay{
+//                        RoundedRectangle(cornerRadius: 12).stroke(.gray, lineWidth: 1)
+//                    }
+//                }
+//                
+//                Spacer()
+//                
+//                // End Date Input Block
+//                VStack(alignment: .leading, spacing: 6) {
+//                    Text("End Date")
+//                        .font(.caption2)
+//                        .bold()
+//                        .foregroundColor(.gray)
+//                    
+//                    CustomDateSelectorByDate(
+//                        selectedDate: $endDate,
+//                        dateRange: startDate...Date.distantFuture
+//                    ).padding(8).overlay{
+//                        RoundedRectangle(cornerRadius: 12).stroke(.gray, lineWidth: 1)
+//                    .frame(maxWidth: .infinity, alignment: .trailing)
+//                }
+//                }
+//            }
+//            .padding(.horizontal)
+//            .onChange(of: startDate) { oldValue, newValue in
+//                if endDate < newValue {
+//                    endDate = newValue
+//                }
+//            }
+//            
+//            // 4. Action Operations Buttons Interface
+//            HStack(spacing: 16) {
+//                Button {
+//                    print("Vacation configured from \(startDate) to \(endDate)")
+//                } label: {
+//                    Text("🏖️ Start Vacation")
+//                        .bold()
+//                        .frame(maxWidth: .infinity)
+//                        .padding(.vertical, 12)
+//                        .background(Color.thirdGreen)
+//                        .foregroundColor(.white)
+//                        .cornerRadius(8)
+//                }
+//                
+//                Button {
+//                    startDate = Date()
+//                    endDate = Date()
+//                } label: {
+//                    Text("Clear Vacation")
+//                        .bold()
+//                        .frame(maxWidth: .infinity)
+//                        .padding(.vertical, 12)
+//                        .background(Color(.systemGroupedBackground))
+//                        .foregroundColor(.red)
+//                        .cornerRadius(8)
+//                }
+//            }
+//            .padding(.horizontal)
+//            .padding(.top, 8)
+//            
+//            Divider()
+//                .padding(.vertical, 8)
+//            
+//            // 5. Historical Record Logging Stack Area
+//            Text("Previous Vacations")
+//                .font(.subheadline)
+//                .bold()
+//                .foregroundColor(.secondary)
+//                .padding(.horizontal)
+//            
+//            Spacer()
+//        }
+//        .padding(.top)
+//        .navigationTitle("Vacation")
+//        .navigationBarTitleDisplayMode(.inline)
+//    }
+//}
+//
+//// MARK: - Wobble & Float Custom Modifier
+//struct WobbleModifier: ViewModifier {
+//    let baseOffset: CGFloat
+//    let delay: Double
+//    @State private var isAnimating = false
+//    
+//    func body(content: Content) -> some View {
+//        content
+//            .offset(y: isAnimating ? baseOffset : -baseOffset)
+//            .rotationEffect(.degrees(isAnimating ? 3 : -3))
+//            .onAppear {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+//                    withAnimation(
+//                        .easeInOut(duration: Double.random(in: 2.5...3.5))
+//                        .repeatForever(autoreverses: true)
+//                    ) {
+//                        isAnimating = true
+//                    }
+//                }
+//            }
+//    }
+//}
+//// MARK: - FIXED 1-TAP SELECTOR
+//// MARK: - AUTO-DISMISS SELECTOR
+//struct CustomDateSelectorByDate: View {
+//    @Binding var selectedDate: Date
+//    let dateRange: ClosedRange<Date>
+//    @State private var showCalendar = false
+//    
+//    private var formattedDate: String {
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "dd MMM yyyy"
+//        return formatter.string(from: selectedDate)
+//    }
+//    
+//    var body: some View {
+//        Button {
+//            showCalendar.toggle()
+//        } label: {
+//            HStack(spacing: 6) {
+//                Text(formattedDate)
+//                    .font(.body)
+//                    .foregroundColor(.primary)
+//                
+//                Image(systemName: "calendar")
+//                    .font(.footnote)
+//                    .foregroundColor(.gray)
+//            }
+//        }
+//        .sheet(isPresented: $showCalendar) {
+//            DatePicker(
+//                "",
+//                selection: $selectedDate,
+//                in: dateRange,
+//                displayedComponents: .date
+//            )
+//            .datePickerStyle(.graphical)
+//            .padding()
+//            .presentationDetents([.medium])
+//            // Detects the tap choice immediately and closes the window automatically
+//            .onChange(of: selectedDate) { _, _ in
+//                showCalendar = false
+//            }
+//        }
+//    }
+//}
+//
+//extension View {
+//    func wobble(baseOffset: CGFloat = 3, delay: Double = 0.0) -> some View {
+//        self.modifier(WobbleModifier(baseOffset: baseOffset, delay: delay))
+//    }
+//}
+//
+//// MARK: - Main View
 struct VacationAnimationView: View {
     
     @State private var animateClouds = false
@@ -367,8 +668,8 @@ struct VacationAnimationView: View {
     }
 }
 
-// MARK: - Preview
-#Preview {
-    VacationView()
-}
-
+//// MARK: - Preview
+//#Preview {
+//    VacationView()
+//}
+//

@@ -26,6 +26,9 @@ final class MainRouter: ObservableObject {
         case walletrechargehistory(rechargeHistory : [RechargeHistory])
         case invoice
         case generateinvoice(startDate: String, endDate: String)
+        case vacation
+        case deliveries
+        case orders
     }
 
     func navigate(to screen: MainFlow) {
@@ -42,6 +45,11 @@ final class MainRouter: ObservableObject {
             navPath.removeLast()
         }
     }
+    
+    func resetToRoot() {
+            // Clearing the path pops everything off the stack back to the root view
+            navPath = NavigationPath()
+        }
 
     func navigateToRoot() {
         navPath = NavigationPath()

@@ -18,7 +18,7 @@ class AuthViewModel: ObservableObject {
     var showUnauthorizedAlert : Bool {
         authToken == nil
     }
-      
+    @Published var shouldResetToHomeTab = false
     
     func clearToken(){
         UserDefaults.standard.removeObject(forKey: "auth_token")
@@ -60,6 +60,7 @@ class AuthViewModel: ObservableObject {
         isNewCustomer = UserDefaults.standard.bool(forKey: "isNewCustomer")
         phone = UserDefaults.standard.string(forKey: "userPhone") ?? ""
         fullname = UserDefaults.standard.string(forKey: "fullName") ?? ""
+        shouldResetToHomeTab = true
         
         print("token  \(UserDefaults.standard.string(forKey : "auth_token"))")
 
@@ -233,7 +234,7 @@ class AuthViewModel: ObservableObject {
                     UserDefaults.standard.set(phone, forKey: "userPhone")
 
                         isLoggedIn = true
-                    
+                    shouldResetToHomeTab = true
                     print("islogged in \(isLoggedIn)   newCustomer \(isNewCustomer)")
 //                        if let token = response.data?.token {
 //                            // Save to UserDefaults (iOS equivalent of SharedPrefs)
@@ -314,6 +315,7 @@ class AuthViewModel: ObservableObject {
     
     func logout() {
         isLoggedIn = false
+        shouldResetToHomeTab = true
         phone = ""
         clearOTP()
         otpRequested = false

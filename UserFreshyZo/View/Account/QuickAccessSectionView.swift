@@ -16,9 +16,17 @@ struct QuickAccessSectionView: View {
             AccountSectionHeader("QUICK ACCESS")
             
             HStack(spacing: 0) {
-                QuickAccessCell(icon: "shippingbox.fill",  label: "My Order",   bgColor: Color(hex: "#F5ECD7")){}
-                QuickAccessCell(icon: "truck.box.fill",    label: "Deliveries", bgColor: Color(hex: "#D7EAFF")){}
-                QuickAccessCell(icon: "airplane",          label: "Vacation",   bgColor: Color(hex: "#EAD7FF")){}
+                QuickAccessCell(icon: "shippingbox.fill",  label: "My Order",   bgColor: Color(hex: "#F5ECD7")){
+                    mainRouter.navigate(to: .orders)
+
+                }
+                QuickAccessCell(icon: "truck.box.fill",    label: "Deliveries", bgColor: Color(hex: "#D7EAFF")){
+                    mainRouter.navigate(to: .deliveries)
+
+                }
+                QuickAccessCell(icon: "airplane",          label: "Vacation",   bgColor: Color(hex: "#EAD7FF")){
+                    mainRouter.navigate(to: .vacation)
+                }
                 QuickAccessCell(icon: "doc.text.fill",     label: "Invoice",    bgColor: Color(hex: "#D7FFE8")){
                     mainRouter.navigate(to: .invoice)
                 }

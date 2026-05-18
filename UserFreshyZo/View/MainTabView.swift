@@ -6,7 +6,7 @@ struct MainTabView: View {
     @EnvironmentObject var cartVM: CartViewModel
     @EnvironmentObject private var productViewModel : ProductViewModel
     @EnvironmentObject private var homeViewModel : HomeViewModel
-
+    @EnvironmentObject private var authViewModel : AuthViewModel
     @State private var selectedCategory = "All Products"
     @EnvironmentObject var mainRouter: MainRouter
 
@@ -60,11 +60,16 @@ struct MainTabView: View {
                     .padding(.bottom, 65)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-        }.onAppear{
-            
+        }.onAppear {
+            // 1. Handle your data fetching
             if homeViewModel.homeRes == nil {
                 homeViewModel.getHomeData()
-
+            }
+            
+            // 2. Check if a change actually occurred requiring a tab reset
+            if authViewModel.shouldResetToHomeTab {
+                selectedTab = 0
+                authViewModel.shouldResetToHomeTab = false // Consume the event
             }
         }
         

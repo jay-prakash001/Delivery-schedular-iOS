@@ -38,15 +38,19 @@ struct SplashView: View {
                             case .testreports : LabReportView()
                             case .article (let article) : ArticleView(article: article)
                             case . productdetails(let id ) : ProductDetailView(id : id)
-                            case . subscriptionstart(let product, let mediaUrls, let quantity, let offers) : SubscriptionView(product : product, mediaUrls: mediaUrls,quantity : quantity, offers: offers)
+                                //                            case . subscriptionstart(let product, let mediaUrls, let quantity, let offers) : SubscriptionView(product : product, mediaUrls: mediaUrls,quantity : quantity, offers: offers)
+                                //
+                                //
+                                //                            case .allreview : AllReviewView()
+                                //                            case .referandearn : RefferalView()
+                                //                            case .walletrechargehistory(let rechargeHistory) : WalletRechargeHistoryView(rechargeHistory: rechargeHistory)
+                                //                            case .invoice : InvoiceDateRangeView()
+                                //                            case .generateinvoice(let startDate, let endDate) : InvoiceView(startDate: startDate, endDate: endDate)
+                                //                            case .vacation : VacationView()
+                                //                            case .deliveries : Text("Deliveries")
+                                //                            case .orders : Text("Orders")
+                            default : PremiumUnlockView()
                                 
-                                
-                            case .allreview : AllReviewView()
-                            case .referandearn : RefferalView()
-                            case .walletrechargehistory(let rechargeHistory) : WalletRechargeHistoryView(rechargeHistory: rechargeHistory)
-                            case .invoice : InvoiceDateRangeView()
-                            case .generateinvoice(let startDate, let endDate) : InvoiceView(startDate: startDate, endDate: endDate)
-                            default : EmptyView()
                             }
                             
                         }
@@ -96,7 +100,9 @@ struct SplashView: View {
                                         case .walletrechargehistory(let rechargeHistory) : WalletRechargeHistoryView(rechargeHistory: rechargeHistory)
                                         case .invoice : InvoiceDateRangeView()
                                         case .generateinvoice(let startDate, let endDate) : InvoiceView(startDate: startDate, endDate: endDate)
-
+                                        case .vacation : VacationView()
+                                        case .deliveries : DeliveriesView()
+                                        case .orders : OrderHistoryView()
                                         default : EmptyView()
                                         }
                                         
@@ -120,7 +126,7 @@ struct SplashView: View {
                                 
                             }
                         }
-                       
+                        
                         
                     }else{
                         
@@ -138,36 +144,36 @@ struct SplashView: View {
                     }
                 }
             }
+            
+            
+        } else {
+            VStack {
+                Image("freshyzo_logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: isPad ? 260 : 150)
+                    .scaleEffect(scale)
+                    .opacity(opacity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+            .onAppear {
                 
-                
-            } else {
-                VStack {
-                    Image("freshyzo_logo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: isPad ? 260 : 150)
-                        .scaleEffect(scale)
-                        .opacity(opacity)
+                withAnimation(.bouncy(duration: 1)) {
+                    scale = 1.5
+                    opacity = 1.5
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(.systemBackground))
-                .onAppear {
-                    
-                    withAnimation(.bouncy(duration: 1)) {
-                        scale = 1.5
-                        opacity = 1.5
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        withAnimation {
-                            isActive = true
-                        }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    withAnimation {
+                        isActive = true
                     }
                 }
             }
         }
     }
-    
-    #Preview {
-        SplashView()
-    }
+}
+
+#Preview {
+    SplashView()
+}
